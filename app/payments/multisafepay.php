@@ -224,17 +224,22 @@ if (defined('PAYMENT_NOTIFICATION')) {
     //$msp->merchant['notification_url'] 	= 	Registry::get('config.current_location') . "/$index_script?dispatch=payment_notification.notify&payment=multisafepay_".strtolower($processor_data['processor_params']['gateway'])."&type=initial";
     //$msp->merchant['cancel_url']       	= 	Registry::get('config.current_location') . "/$index_script?dispatch=payment_notification.cancel&payment=multisafepay_".strtolower($processor_data['processor_params']['gateway'])."&transactionid=".$order_id;
     //$msp->merchant['redirect_url'] 	   	= 	Registry::get('config.current_location') . "/$index_script?dispatch=payment_notification.return&payment=multisafepay_".strtolower($processor_data['processor_params']['gateway']);	
-
-    $url = 'payment_notification.notify&payment=multisafepay_' . strtolower($processor_data['processor_params']['gateway']) . '&type=initial';
+    
+    $gateway_url_postfix = strtolower($processor_data['processor_params']['gateway']);
+    if ($gateway_url_postfix == "mistercash") { //hotfix for bancontact/mistercash url
+        $gateway_url_postfix = "bancontact";
+    }
+    
+    $url = 'payment_notification.notify&payment=multisafepay_' . $gateway_url_postfix . '&type=initial';
     $url = fn_url($url, AREA, 'current');
 
     $msp->merchant['notification_url'] = $url;
 
-    $url = 'payment_notification.cancel&payment=multisafepay_' . strtolower($processor_data['processor_params']['gateway']) . '&transactionid=' . $order_id;
+    $url = 'payment_notification.cancel&payment=multisafepay_' . $gateway_url_postfix . '&transactionid=' . $order_id;
     $url = fn_url($url, AREA, 'current');
     $msp->merchant['cancel_url'] = $url;
 
-    $url = 'payment_notification.return&payment=multisafepay_' . strtolower($processor_data['processor_params']['gateway']);
+    $url = 'payment_notification.return&payment=multisafepay_' . $gateway_url_postfix;
     $url = fn_url($url, AREA, 'current');
     $msp->merchant['redirect_url'] = $url;
 
