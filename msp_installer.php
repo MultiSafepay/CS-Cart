@@ -30,6 +30,9 @@ $payments = array(
     'EINVOICE' => 'Einvoice',
     'KLARNA' => 'Klarna Invoice',
     'AMEX' => 'American Express',
+    'ING' => 'ING-Homepay',
+    'KBC' => 'KBC/CBC',
+    'BELFIUS' => 'Belfius',
 );
 
 
