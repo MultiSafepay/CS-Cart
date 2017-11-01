@@ -259,10 +259,12 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $msp->customer['ipaddress'] = $ip['host'];
     $msp->customer['forwardedip'] = $ip['proxy'];
     $msp->parseCustomerAddress($order_info['b_address']);
+	$currency_coefficient = Registry::get('currencies.' . CART_SECONDARY_CURRENCY . '.coefficient');
+	$_order_total = round(!empty($currency_coefficient) ? $order_info['total'] / floatval($currency_coefficient) : $order_info['total'], 2)*100;
 
     $msp->transaction['id'] = $order_id;
     $msp->transaction['currency'] = ($order_info['secondary_currency'] ? $order_info['secondary_currency'] : $processor_data['processor_params']['currency']);
-    $msp->transaction['amount'] = $order_info['total'] * 100;
+    $msp->transaction['amount'] = $_order_total;
     $msp->transaction['description'] = 'Order #' . $msp->transaction['id'];
     $msp->transaction['items'] = $cart_items;
     $msp->transaction['gateway'] = $processor_data['processor_params']['gateway'];
@@ -419,7 +421,6 @@ if (defined('PAYMENT_NOTIFICATION')) {
             exit;
         }
     }
-
 
     if (!isset($msp->error)) {
         fn_redirect($url, true, true);
