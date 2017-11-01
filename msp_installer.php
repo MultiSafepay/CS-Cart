@@ -19,7 +19,7 @@ $payments = array(
     'IDEAL' => 'iDeal',
     'MAESTRO' => 'Maestro',
     'MASTERCARD' => 'Mastercard',
-    'bancontact' => 'Bancontact',
+    'BANCONTACT' => 'Bancontact',
     'WALLET' => 'Multisafepay Wallet',
     'VISA' => 'Visa',
     'PAYPAL' => 'PayPal',
@@ -64,12 +64,14 @@ echo $html;
 function upd($naam, $query, $config)
 {
     $mysqli = new mysqli($config['db_host'], $config['db_user'], $config['db_password'], $config['db_name']);
+    
     if ($mysqli->connect_errno) {
         printf("Connect failed: %s\n", $mysqli->connect_error);
         exit();
     }
 
-    $q = mysqli_query($con, "SELECT * FROM `" . $config['table_prefix'] . "payment_processors` WHERE `processor` = 'MultiSafepay " . $naam . "'");
+    $q = $mysqli->query("SELECT * FROM `" . $config['table_prefix'] . "payment_processors` WHERE `processor` = 'MultiSafepay " . $naam . "'");
+    
     if (!$q || ($n = mysqli_num_rows($q)) == 0) {
         $ex = $mysqli->query("INSERT INTO " . $query);
         echo 'insert ' . $ex . '<br/>';
