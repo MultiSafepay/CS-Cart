@@ -604,6 +604,7 @@ class MultiSafepay
     function createTransactionRequest()
     {
         // issuer attribute
+        $this->cart_xml = $this->cart->GetXML();
         $issuer = "";
         if (!empty($this->issuer)) {
             $issuer = ' issuer="' . $this->xmlEscape($this->issuer) . '"';
@@ -680,6 +681,7 @@ class MultiSafepay
 
     function createDirectXMLTransactionRequest()
     {
+	    $this->cart_xml = $this->cart->GetXML();
         $issuer = "";
         if (!empty($this->issuer)) {
             $issuer = ' issuer="' . $this->xmlEscape($this->issuer) . '"';
@@ -756,6 +758,7 @@ class MultiSafepay
 					<email>' . $this->xmlEscape($this->delivery['email']) . '</email>
 				</customer-delivery>
 			' . $gatewayinfo . '
+			' . $this->cart_xml . '
 		  <signature>' . $this->xmlEscape($this->signature) . '</signature>
 		</directtransaction>';
 
