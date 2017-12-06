@@ -44,6 +44,7 @@ class MultiSafepay
         'user_agent' => '',
         'referrer' => '',
         'bankaccount' => '',
+        'gender' => '',
         'birthday' => ''
     );
     // customer-delivery data
@@ -73,8 +74,10 @@ class MultiSafepay
         'manual' => 'false',
         'gateway' => '',
         'daysactive' => '',
+        'secondsactive' => '',
         'invoice_id' => '',
         'shipdate' => '',
+        'special' => '',
     );
     var $gatewayinfo = array(
         'user_agent' => '',
@@ -83,6 +86,7 @@ class MultiSafepay
         'birthday' => '',
         'phone' => '',
         'email' => '',
+        'gender' => '',
         'issuer' => ''
     );
     var $plugin = array(
@@ -114,7 +118,7 @@ class MultiSafepay
     var $parsed_xml;
     var $parsed_root;
 
-    function MultiSafepay()
+    function __construct()
     {
         $this->cart = new MspCart();
         $this->fields = new MspCustomFields();
@@ -277,8 +281,13 @@ class MultiSafepay
             return false;
 
         // return payment url
-        $this->payment_url = $this->xmlUnescape($rootNode['transaction']['payment_url']['VALUE']);
-        return $this->payment_url;
+        //$this->payment_url = $this->xmlUnescape($rootNode['transaction']['payment_url']['VALUE']);
+        if (isset($rootNode['transaction']['payment_url']['VALUE'])) {
+            $this->payment_url = $this->xmlUnescape($rootNode['transaction']['payment_url']['VALUE']);
+            return $this->payment_url;
+        } else {
+            return false;
+        }
     }
 
     /*
@@ -343,6 +352,90 @@ class MultiSafepay
         $this->details = $details;
 
         return true;
+    }
+
+    /*
+     * Send update transaction
+     */
+
+    function updateInvoice()
+    {
+        $this->checkSettings();
+
+        // generate request
+        $this->request_xml = $this->createUpdateInvoiceRequest();
+
+        // post request and get reply
+        $this->api_url = $this->getApiUrl();
+        $this->reply_xml = $this->xmlPost($this->api_url, $this->request_xml);
+
+        // communication error
+        if (!$this->reply_xml)
+            return false;
+
+        // parse xml
+        $rootNode = $this->parseXmlResponse($this->reply_xml);
+        if (!$rootNode)
+            return false;
+
+        // parse all the order details
+        $details = $this->processStatusReply($rootNode);
+        $this->details = $details;
+
+        return true;
+    }
+
+    function refundTransaction()
+    {
+        $this->checkSettings();
+
+        // generate request
+        $this->request_xml = $this->createRefundTransactionRequest();
+
+        // post request and get reply
+        $this->api_url = $this->getApiUrl();
+        $this->reply_xml = $this->xmlPost($this->api_url, $this->request_xml);
+
+        // communication error
+        if (!$this->reply_xml)
+            return false;
+
+        // parse xml
+        $rootNode = $this->parseXmlResponse($this->reply_xml);
+        if (!$rootNode)
+            return false;
+
+        // parse all the order details
+        $details = $this->processStatusReply($rootNode);
+        $this->details = $details;
+
+        return true;
+    }
+
+    /**
+     * Create the transaction request xml
+     *
+     * @return string
+     */
+    public function createRefundTransactionRequest()
+    {
+        $request = '<?xml version="1.0" encoding="UTF-8"?>
+    <refundtransaction ua="refund">
+        <merchant>
+            <account>' . $this->xmlEscape($this->merchant['account_id']) . '</account>
+            <site_id>' . $this->xmlEscape($this->merchant['site_id']) . '</site_id>
+            <api_key>' . $this->xmlEscape($this->merchant['api_key']) . '</api_key>
+            <signature>' . $this->xmlEscape($this->signature) . '</signature>
+        </merchant>
+        <transaction>
+			<description>' . $this->xmlEscape($this->transaction['description']) . '</description>
+            <id>' . $this->xmlEscape($this->transaction['id']) . '</id>
+            <amount>' . $this->xmlEscape($this->transaction['amount']) . '</amount>
+            <currency>' . $this->xmlEscape($this->transaction['currency']) . '</currency>
+        </transaction>
+    </refundtransaction>';
+
+        return $request;
     }
 
     function _isXmlSectionEmpty($section)
@@ -576,6 +669,7 @@ class MultiSafepay
         <items>' . $this->xmlEscape($this->transaction['items']) . '</items>
         <manual>' . $this->xmlEscape($this->transaction['manual']) . '</manual>
         <daysactive>' . $this->xmlEscape($this->transaction['daysactive']) . '</daysactive>
+        <secondsactive>' . $this->xmlEscape($this->transaction['secondsactive']) . '</secondsactive>
         <gateway' . $issuer . '>' . $this->xmlEscape($this->transaction['gateway']) . '</gateway>
       </transaction>
       <signature>' . $this->xmlEscape($this->signature) . '</signature>
@@ -611,6 +705,7 @@ class MultiSafepay
 				<items>' . $this->xmlEscape($this->transaction['items']) . '</items>
 				<manual>' . $this->xmlEscape($this->transaction['manual']) . '</manual>
 				<daysactive>' . $this->xmlEscape($this->transaction['daysactive']) . '</daysactive>
+                <secondsactive>' . $this->xmlEscape($this->transaction['secondsactive']) . '</secondsactive>
 				<gateway' . $issuer . '>' . $this->xmlEscape($this->transaction['gateway']) . '</gateway>
 			</transaction>
 		  <merchant>
@@ -686,6 +781,7 @@ class MultiSafepay
 				<items>' . $this->xmlEscape($this->transaction['items']) . '</items>
 				<manual>' . $this->xmlEscape($this->transaction['manual']) . '</manual>
 				<daysactive>' . $this->xmlEscape($this->transaction['daysactive']) . '</daysactive>
+                <secondsactive>' . $this->xmlEscape($this->transaction['secondsactive']) . '</secondsactive>
 				<gateway' . $issuer . '>' . $this->xmlEscape($this->transaction['gateway']) . '</gateway>
 			</transaction>
 		  <merchant>
@@ -773,8 +869,9 @@ class MultiSafepay
         }
 
 
-        if ($this->transaction['gateway'] != "") {
-
+        if ($this->transaction['special'] != "") {
+            $trans_type = 'directtransaction';
+        } elseif ($this->transaction['gateway'] != "") {
             $trans_type = 'redirecttransaction';
         } else {
 
@@ -819,6 +916,9 @@ class MultiSafepay
 				<email>' . $this->xmlEscape($this->customer['email']) . '</email>
 				<referrer>' . $this->xmlEscape($this->customer['referrer']) . '</referrer>
 				<user_agent>' . $this->xmlEscape($this->customer['user_agent']) . '</user_agent>
+				<birthday>' . $this->xmlEscape($this->customer['birthday']) . '</birthday>
+				<bankaccount>' . $this->xmlEscape($this->customer['bankaccount']) . '</bankaccount>
+                <gender>' . $this->xmlEscape($this->customer['gender']) . '</gender>
 			</customer>
 			<customer-delivery>
 				<firstname>' . $this->xmlEscape($this->delivery['firstname']) . '</firstname>
@@ -841,6 +941,7 @@ class MultiSafepay
 				<referrer>' . $this->xmlEscape($this->gatewayinfo['referrer']) . '</referrer>
 				<user_agent>' . $this->xmlEscape($this->gatewayinfo['user_agent']) . '</user_agent>
 				<birthday>' . $this->xmlEscape($this->gatewayinfo['birthday']) . '</birthday>
+                <gender>' . $this->xmlEscape($this->gatewayinfo['gender']) . '</gender>
 				<bankaccount>' . $this->xmlEscape($this->gatewayinfo['bankaccount']) . '</bankaccount>
 				<phone>' . $this->xmlEscape($this->gatewayinfo['phone']) . '</phone>
 				<email>' . $this->xmlEscape($this->gatewayinfo['email']) . '</email>
@@ -930,6 +1031,28 @@ class MultiSafepay
     }
 
     /*
+     * Create the update transaction request xml
+     */
+
+    function createUpdateInvoiceRequest()
+    {
+        $request = '<?xml version="1.0" encoding="UTF-8"?>
+    <updatetransaction>
+    <merchant>
+      <account>' . $this->xmlEscape($this->merchant['account_id']) . '</account>
+      <site_id>' . $this->xmlEscape($this->merchant['site_id']) . '</site_id>
+      <site_secure_code>' . $this->xmlEscape($this->merchant['site_code']) . '</site_secure_code>
+    </merchant>
+    <transaction>
+      <id>' . $this->xmlEscape($this->transaction['id']) . '</id>
+      <invoiceid>' . $this->xmlEscape($this->transaction['invoice_id']) . '</invoiceid>
+    </transaction>
+    </updatetransaction>';
+
+        return $request;
+    }
+
+    /*
      * Creates the signature
      */
 
@@ -950,10 +1073,24 @@ class MultiSafepay
 
     function setIp()
     {
-        $this->customer['ipaddress'] = $_SERVER['REMOTE_ADDR'];
+
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $isValid = filter_var($ip, FILTER_VALIDATE_IP);
+
+        if ($isValid) {
+            $this->customer['ipaddress'] = $isValid;
+        }
 
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $this->customer['forwardedip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            $isValid = filter_var($ip, FILTER_VALIDATE_IP);
+
+            if ($isValid) {
+                $this->customer['forwardedip'] = $isValid;
+            } else {
+                $this->customer['forwardedip'] = '127.0.0.1';
+            }
         }
     }
 
@@ -1277,7 +1414,7 @@ class msp_gc_xmlparser
      * Takes in XML data as input( do not include the <xml> tag
      */
 
-    function msp_gc_xmlparser($input, $xmlParams = array(XML_OPTION_CASE_FOLDING => 0))
+    function __construct($input, $xmlParams = array(XML_OPTION_CASE_FOLDING => 0))
     {
 
         // XML PARSE BUG: http://bugs.php.net/bug.php?id=45996
@@ -1416,7 +1553,7 @@ class msp_gc_XmlBuilder
     var $indent;
     var $stack = array();
 
-    function msp_gc_XmlBuilder($indent = '  ')
+    function __construct($indent = '  ')
     {
         $this->indent = $indent;
         $this->xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n";
@@ -1600,7 +1737,7 @@ class MspCart
      *                         , as of now values can be 'USD' or 'GBP'.
      *                         defaults to 'USD'
      */
-    function MspCart($id = '', $key = '', $server_type = "sandbox", $currency = "EUR")
+    function __construct($id = '', $key = '', $server_type = "sandbox", $currency = "EUR")
     {
         $this->merchant_id = $id;
         $this->merchant_key = $key;
@@ -2178,7 +2315,7 @@ class MspCart
 
                 $xml_data->Pop($ship->type);
             } else if ($ship->type == "pickup") {
-                $xml_data->Push('pickup', array('name' => $ship->name));
+                $xml_data->Push('pickup', array('name' => $ship->name, 'provider' => $ship->provider));
                 $xml_data->Element('price', $ship->price, array('currency' => $this->currency));
                 $xml_data->Pop('pickup');
             }
@@ -2452,7 +2589,7 @@ class MspCart
         ini_set('include_path', ini_get('include_path') . PATH_SEPARATOR . '.');
         require_once('library/googlerequest.php');
         $GRequest = new GoogleRequest($this->merchant_id, $this->merchant_key, $this->server_url == "https://checkout.google.com/" ?
-                        "Production" : "sandbox", $this->currency);
+                "Production" : "sandbox", $this->currency);
         $GRequest->SetProxy($proxy);
         $GRequest->SetCertificatePath($certPath);
 
@@ -2517,7 +2654,7 @@ class MspCart
         if ($this->variant == "text") {
             $data .= "<div align=center><form method=\"POST\" action=\"" .
                     $url . "\"" . ($this->googleAnalytics_id ?
-                            " onsubmit=\"setUrchinInputCode();\"" : "") . ">
+                    " onsubmit=\"setUrchinInputCode();\"" : "") . ">
                 <input type=\"image\" name=\"Checkout\" alt=\"Checkout\" 
                 src=\"" . $this->server_url . "buttons/checkout.gif?merchant_id=" .
                     $this->merchant_id . "&w=" . $width . "&h=" . $height . "&style=" .
@@ -2609,7 +2746,7 @@ class MspCart
         if ($this->variant == "text") {
             $data .= "<div align=center><form method=\"POST\" action=\"" .
                     $this->checkout_url . "\"" . ($this->googleAnalytics_id ?
-                            " onsubmit=\"setUrchinInputCode();\"" : "") . ">
+                    " onsubmit=\"setUrchinInputCode();\"" : "") . ">
                 <input type=\"hidden\" name=\"cart\" value=\"" .
                     base64_encode($this->GetXML()) . "\">
                 <input type=\"hidden\" name=\"signature\" value=\"" .
@@ -2645,7 +2782,7 @@ class MspCart
                     " width=\"" . $width . "\" /></div>";
         }
         if ($showtext) {
-            $data .="<div align=\"center\"><a href=\"javascript:void(window.ope" .
+            $data .= "<div align=\"center\"><a href=\"javascript:void(window.ope" .
                     "n('http://checkout.google.com/seller/what_is_google_checkout.html'" .
                     ",'whatischeckout','scrollbars=0,resizable=1,directories=0,height=2" .
                     "50,width=400'));\" onmouseover=\"return window.status = 'What is G" .
@@ -2691,7 +2828,7 @@ class MspCart
         if ($this->variant == "text") {
             $data .= "<div align=center><form method=\"POST\" action=\"" .
                     $this->checkout_url . "\"" . ($this->googleAnalytics_id ?
-                            " onsubmit=\"setUrchinInputCode();\"" : "") . ">
+                    " onsubmit=\"setUrchinInputCode();\"" : "") . ">
                 <input type=\"hidden\" name=\"buyButtonCart\" value=\"" .
                     base64_encode($this->GetXML()) . "//separator//" .
                     base64_encode($this->CalcHmacSha1($this->GetXML())) . "\">
@@ -2727,7 +2864,7 @@ class MspCart
                     " width=\"" . $width . "\" /></div>";
         }
         if ($showtext) {
-            $data .="<div align=\"center\"><a href=\"javascript:void(window.ope" .
+            $data .= "<div align=\"center\"><a href=\"javascript:void(window.ope" .
                     "n('http://checkout.google.com/seller/what_is_google_checkout.html'" .
                     ",'whatischeckout','scrollbars=0,resizable=1,directories=0,height=2" .
                     "50,width=400'));\" onmouseover=\"return window.status = 'What is G" .
@@ -2795,7 +2932,7 @@ class MspCart
         if ($this->variant == "text") {
             $data .= "<div align=\"center\"><form method=\"POST\" action=\"" .
                     $this->checkoutForm_url . "\"" . ($this->googleAnalytics_id ?
-                            " onsubmit=\"setUrchinInputCode();\"" : "") . ">";
+                    " onsubmit=\"setUrchinInputCode();\"" : "") . ">";
 
             $request = $this->GetXML();
             require_once('xml-processing/gc_xmlparser.php');
@@ -3022,7 +3159,7 @@ class MspMerchantPrivate
     var $data;
     var $type = "Abstract";
 
-    function MspMerchantPrivate()
+    function __construct()
     {
         
     }
@@ -3079,7 +3216,7 @@ class MspMerchantPrivateData extends MspMerchantPrivate
      *                      </stuff>
      *                    </my-order-id>
      */
-    function MspMerchantPrivateData($data = array())
+    function __construct($data = array())
     {
         $this->data = $data;
         $this->type = 'merchant-private-data';
@@ -3110,7 +3247,7 @@ class MspMerchantPrivateItemData extends MspMerchantPrivate
      *                      </stuff>
      *                    </my-item-id>
      */
-    function MspMerchantPrivateItemData($data = array())
+    function __construct($data = array())
     {
         $this->data = $data;
         $this->type = 'merchant-private-item-data';
@@ -3181,11 +3318,7 @@ class MspItem
      */
     function xmlEscape($str)
     {
-        $string = htmlspecialchars($str, ENT_COMPAT, "UTF-8");
-
-
-
-        return htmlentities($string, ENT_COMPAT, "UTF-8", true);
+        return htmlspecialchars($str, ENT_COMPAT, "UTF-8");
     }
 
     /*
@@ -3211,7 +3344,7 @@ class MspItem
      * @param double $numeric_weight the weight of the item
      * 
      */
-    function MspItem($name, $desc, $qty, $price, $item_weight = '', $numeric_weight = '')
+    function __construct($name, $desc, $qty, $price, $item_weight = '', $numeric_weight = '')
     {
         $this->item_name = $this->xmlEscape($name);
         $this->item_description = $this->xmlEscape($desc);
@@ -3266,7 +3399,7 @@ class MspItem
      */
     function SetTaxTableSelector($tax_selector)
     {
-        $this->tax_table_selector = $tax_selector;
+        $this->tax_table_selector = (string) $tax_selector;
     }
 
     /**
@@ -3358,7 +3491,7 @@ class MspFlatRateShipping
      * @param string $name a name for the shipping
      * @param double $price the price for this shipping
      */
-    function MspFlatRateShipping($name, $price)
+    function __construct($name, $price)
     {
         $this->name = $name;
         $this->price = $price;
@@ -3413,7 +3546,7 @@ class MspShippingFilters
     var $excluded_state_areas_arr;
     var $excluded_zip_patterns_arr;
 
-    function MspShippingFilters()
+    function __construct()
     {
         $this->allowed_country_codes_arr = array();
         $this->allowed_postal_patterns_arr = array();
@@ -3634,15 +3767,17 @@ class MspPickUp
     var $price;
     var $name;
     var $type = "pickup";
+    var $provider;
 
     /**
      * @param string $name the name of this shipping option
      * @param double $price the handling cost (if there is one)
      */
-    function MspPickUp($name, $price)
+    function __construct($name, $price, $provider = '')
     {
         $this->price = $price;
         $this->name = $name;
+        $this->provider = $provider;
     }
 
 }
@@ -3686,7 +3821,7 @@ class MspTaxRule
     var $zip_patterns_arr;
     var $country_area;
 
-    function MspTaxRule()
+    function __construct()
     {
         
     }
@@ -3744,7 +3879,7 @@ class MspDefaultTaxRule extends MspTaxRule
 
     var $shipping_taxed = false;
 
-    function MspDefaultTaxRule($tax_rate, $shipping_taxed = "false")
+    function __construct($tax_rate, $shipping_taxed = "false")
     {
         $this->tax_rate = $tax_rate;
         $this->shipping_taxed = $shipping_taxed;
@@ -3765,7 +3900,7 @@ class MspDefaultTaxRule extends MspTaxRule
 class MspAlternateTaxRule extends MspTaxRule
 {
 
-    function MspAlternateTaxRule($tax_rate)
+    function __construct($tax_rate)
     {
         $this->tax_rate = $tax_rate;
 
@@ -3789,7 +3924,7 @@ class MspAlternateTaxTable
     var $tax_rules_arr;
     var $standalone;
 
-    function MspAlternateTaxTable($name = "", $standalone = "false")
+    function __construct($name = "", $standalone = "false")
     {
         if ($name != "") {
             $this->name = $name;
@@ -3959,7 +4094,7 @@ class MspCustomField
     var $descriptionRight = array();
     var $descriptionBottom = array();
 
-    function MspCustomField($name = null, $type = null, $label = null)
+    function __construct($name = null, $type = null, $label = null)
     {
         $this->name = $name;
         $this->type = $type;
@@ -3997,7 +4132,7 @@ class MspCustomFieldOption
     var $value;
     var $label;
 
-    function MspCustomFieldOption($value, $label)
+    function __construct($value, $label)
     {
         $this->value = $value;
         $this->label = $label;
@@ -4012,7 +4147,7 @@ class MspCustomFieldValidation
     var $data;
     var $error;
 
-    function MspCustomFieldValidation($type, $data, $error)
+    function __construct($type, $data, $error)
     {
         $this->type = $type;
         $this->data = $data;
@@ -4027,7 +4162,7 @@ class MspCustomFieldFilter
     var $allowed_country_codes_arr;
     var $excluded_country_codes_arr;
 
-    function MspCustomFieldFilter()
+    function __construct()
     {
         $this->allowed_country_codes_arr = array();
         $this->excluded_country_codes_arr = array();

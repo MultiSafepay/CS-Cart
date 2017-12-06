@@ -277,11 +277,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
 
     $taxes = array();
 
-    if ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer'])) {
-        $msp->extravars = $order_info['payment_info']['issuer'];
-        $url = $msp->startDirectXMLTransaction();
-    } elseif ($processor_data['processor_params']['gateway'] == 'PAYAFTER' || $processor_data['processor_params']['gateway'] == 'KLARNA' || $processor_data['processor_params']['gateway'] == 'EINVOICE') {
-        $items = $order_info['products'];
+    $items = $order_info['products'];
 
         //Add the products
         foreach ($items as $item) {
@@ -403,8 +399,9 @@ if (defined('PAYMENT_NOTIFICATION')) {
 
 
         $url = $msp->startCheckout();
-    } else {
-        $url = $msp->startTransaction();
+    if ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer'])) {
+        $msp->extravars = $order_info['payment_info']['issuer'];
+        $url = $msp->startDirectXMLTransaction();
     }
     if (isset($processor_data['processor_params']['debug'])) {
         if ($processor_data['processor_params']['debug'] == 'YES') {
