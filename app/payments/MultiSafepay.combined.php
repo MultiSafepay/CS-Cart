@@ -604,7 +604,6 @@ class MultiSafepay
     function createTransactionRequest()
     {
         // issuer attribute
-        $this->cart_xml = $this->cart->GetXML();
         $issuer = "";
         if (!empty($this->issuer)) {
             $issuer = ' issuer="' . $this->xmlEscape($this->issuer) . '"';
