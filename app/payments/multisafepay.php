@@ -228,6 +228,8 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $gateway_url_postfix = strtolower($processor_data['processor_params']['gateway']);
     if ($gateway_url_postfix == "mistercash") { //hotfix for bancontact/mistercash url
         $gateway_url_postfix = "bancontact";
+    }elseif ($gateway_url_postfix == "psafecard") { //hotfix for psafecard
+        $gateway_url_postfix = "paysafecard";
     }
 
     $url = 'payment_notification.notify&payment=multisafepay_' . $gateway_url_postfix . '&type=initial';
