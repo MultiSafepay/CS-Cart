@@ -1,4 +1,4 @@
-{* $Id: cc_multisafepay.tpl,v 1.0 2008/04/20 letun Exp $ *}§
+{* $Id: cc_multisafepay.tpl,v 1.0 2008/04/20 letun Exp $ *}
 {assign var="r_url" value="`$config.http_location`/`$config.customer_index`?dispatch=payment_notification.notify&payment=multisafepay_belfius"}
 {assign var="e_url" value="`$config.http_location`/`$config.customer_index`?dispatch=payment_notification&payment_notification.result=multisafepay_belfius"}
 <h3>MultiSafepay</h3>
