@@ -200,12 +200,13 @@ if (defined('PAYMENT_NOTIFICATION')) {
     if (is_array($itemlist)) {
         $cart_items = "<ul>\n";
         foreach ($itemlist as $product) {
-            $cart_items .= "<li>" . $product['amount'] . " x : " . $product['product'] . " : " . $product['price'] . "</li>\n";
+            $product_price = fn_format_price_by_currency($product['price'], CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY);
+            $cart_items .= "<li>" . $product['amount'] . " x : " . $product['product'] . " : " . $product_price . "</li>\n";
         }
         $cart_items .= "</ul>\n";
     }
 
-
+    
     if ($processor_data['processor_params']['mode'] == 'T') {
         $test = true;
     } else {
@@ -259,12 +260,10 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $msp->customer['ipaddress'] = $ip['host'];
     $msp->customer['forwardedip'] = $ip['proxy'];
     $msp->parseCustomerAddress($order_info['b_address']);
-	$currency_coefficient = Registry::get('currencies.' . CART_SECONDARY_CURRENCY . '.coefficient');
-	$_order_total = round(!empty($currency_coefficient) ? $order_info['total'] / floatval($currency_coefficient) : $order_info['total'], 2)*100;
 
     $msp->transaction['id'] = $order_id;
     $msp->transaction['currency'] = ($order_info['secondary_currency'] ? $order_info['secondary_currency'] : $processor_data['processor_params']['currency']);
-    $msp->transaction['amount'] = $_order_total;
+    $msp->transaction['amount'] = fn_format_price_by_currency($order_info['total'], CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY) * 100;
     $msp->transaction['description'] = 'Order #' . $msp->transaction['id'];
     $msp->transaction['items'] = $cart_items;
     $msp->transaction['gateway'] = $processor_data['processor_params']['gateway'];
