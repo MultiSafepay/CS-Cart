@@ -267,7 +267,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $msp->transaction['amount'] = $order_info['total'] * 100;
     $msp->transaction['description'] = 'Order #' . $msp->transaction['id'];
     $msp->transaction['items'] = $cart_items;
-    $msp->transaction['gateway'] = $processor_data['processor_params']['gateway'];
+    $msp->transaction['gateway'] = getGateway($processor_data['processor_params']['gateway']);
     $msp->plugin_name = 'CS-Cart 4.x';
     $msp->version = '1.1.0';
 
@@ -437,6 +437,11 @@ function parseFeed()
 {
     echo 'parce feed';
     exit;
+}
+
+function getGateway($gateway_code)
+{
+    return ($gateway_code == "WALLET") ? "" : $gateway_code;
 }
 
 ?>

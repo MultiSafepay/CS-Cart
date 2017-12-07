@@ -868,18 +868,11 @@ class MultiSafepay
             $use_shipping_xml = "";
         }
 
-
         if ($this->transaction['special'] != "") {
             $trans_type = 'directtransaction';
-        } elseif ($this->transaction['gateway'] != "") {
-            $trans_type = 'redirecttransaction';
         } else {
-
-            $trans_type = 'checkouttransaction';
+            $trans_type = 'redirecttransaction';
         }
-
-
-
 
         $request = '<?xml version="1.0" encoding="UTF-8"?>
 		<' . $trans_type . ' ua="' . $this->plugin_name . ' ' . $this->version . '">
