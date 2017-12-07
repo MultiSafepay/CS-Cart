@@ -400,10 +400,14 @@ if (defined('PAYMENT_NOTIFICATION')) {
         $msp->cart->AddAlternateTaxTables($taxtable);
 
 
-        $url = $msp->startCheckout();
+        
+        
+        
     if ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer'])) {
         $msp->extravars = $order_info['payment_info']['issuer'];
         $url = $msp->startDirectXMLTransaction();
+    }else{
+	    $url = $msp->startCheckout();
     }
     if (isset($processor_data['processor_params']['debug'])) {
         if ($processor_data['processor_params']['debug'] == 'YES') {
