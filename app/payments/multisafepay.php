@@ -265,6 +265,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
 
     $msp->transaction['id'] = $order_id;
     $msp->transaction['currency'] = ($order_info['secondary_currency'] ? $order_info['secondary_currency'] : $processor_data['processor_params']['currency']);
+    $msp->cart->currency = $msp->transaction['currency'];
     $msp->transaction['amount'] = fn_format_price_by_currency($order_info['total'], CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY) * 100;
     $msp->transaction['description'] = 'Order #' . $msp->transaction['id'];
     $msp->transaction['items'] = $cart_items;
@@ -285,7 +286,8 @@ if (defined('PAYMENT_NOTIFICATION')) {
         //Add the products
         foreach ($items as $item) {
             $product_data = fn_get_product_data($item['product_id'], $_SESSION['auth'], $order_info['lang_code'], '', true, true, true, true, false, true, true);
-
+            
+			$taxid ='BTW0';
             foreach ($product_data['tax_ids'] as $key => $value) {
                 $taxid = $value;
                 $taxed = $order_info['taxes'][$product_data[$value]]['price_includes_tax'];
@@ -298,12 +300,14 @@ if (defined('PAYMENT_NOTIFICATION')) {
                 $product_price = $item['price'] - $btw;
             }
 
-            $cart_item_msp = new MspItem($item['product'], '', $item['amount'], $product_price, 'KG', 0);
-            $msp->cart->AddItem($cart_item_msp);
+            $cart_item_msp = new MspItem($item['product'], '', $item['amount'], fn_format_price_by_currency($product_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
             $cart_item_msp->SetMerchantItemId($item['product_code']);
             //$cart_item_msp->SetTaxTableSelector('P_'.$item['item_id']);
             $cart_item_msp->SetTaxTableSelector($taxid);
+            $msp->cart->AddItem($cart_item_msp);
         }
+        
+      
 
 
         //add shipping line item
@@ -327,7 +331,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
                         $shiping_price = $shipper['rate'];
                     }
 
-                    $c_item = new MspItem($shipper['shipping'], 'Verzending', 1, $shiping_price, 'KG', 0);
+                    $c_item = new MspItem($shipper['shipping'], 'Verzending', 1, fn_format_price_by_currency($shiping_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
                     $c_item->SetMerchantItemId($key);
                     //$c_item->SetTaxTableSelector('S_'.$key.'_0');
 
@@ -351,7 +355,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
             $surcharge_price = $order_info['payment_method']['a_surcharge'] - $btw;
         }
 
-        $c_item = new MspItem($order_info['payment_method']['payment'], 'Betaal na ontvangst Fee', 1, $surcharge_price, 'KG', 0);
+        $c_item = new MspItem($order_info['payment_method']['payment'], 'Betaal na ontvangst Fee', 1, fn_format_price_by_currency($surcharge_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
         $c_item->SetMerchantItemId($order_info['payment_method']['payment_id']);
 
         $ptax = $order_info['payment_method']['tax_ids'];
@@ -386,7 +390,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
             foreach ($order_info['promotions'] as $key => $value) {
                 if ($order_info['subtotal_discount'] != '0.00') {
                     $discount_price = $order_info['subtotal_discount'];
-                    $coupon = new MspItem($value['name'], 'Discount Price', 1, ('-' . $discount_price));
+                    $coupon = new MspItem($value['name'], 'Discount Price', 1, ('-' . fn_format_price_by_currency($discount_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY)));
                     $coupon->SetTaxTableSelector('BTW0');
                     $msp->cart->AddItem($coupon);
                 }
@@ -399,10 +403,6 @@ if (defined('PAYMENT_NOTIFICATION')) {
         $taxrule = new MspAlternateTaxRule($percentage);
         $taxtable->AddAlternateTaxRules($taxrule);
         $msp->cart->AddAlternateTaxTables($taxtable);
-
-
-        
-        
         
     if ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer'])) {
         $msp->extravars = $order_info['payment_info']['issuer'];
