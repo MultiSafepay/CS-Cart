@@ -332,7 +332,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
                     }
 
                     $c_item = new MspItem($shipper['shipping'], 'Verzending', 1, fn_format_price_by_currency($shiping_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
-                    $c_item->SetMerchantItemId($key);
+                    $c_item->SetMerchantItemId('msp-shipping');
                     //$c_item->SetTaxTableSelector('S_'.$key.'_0');
 
                     if ($shiptaxselector) {
@@ -356,7 +356,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
         }
 
         $c_item = new MspItem($order_info['payment_method']['payment'], 'Betaal na ontvangst Fee', 1, fn_format_price_by_currency($surcharge_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
-        $c_item->SetMerchantItemId($order_info['payment_method']['payment_id']);
+        $c_item->SetMerchantItemId('payment-fee');
 
         $ptax = $order_info['payment_method']['tax_ids'];
         foreach ($ptax as $key => $value) {
