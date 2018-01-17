@@ -1,9 +1,30 @@
 <?php
 
 /**
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade the MultiSafepay plugin
+ * to newer versions in the future. If you wish to customize the plugin for your
+ * needs please document your changes and make backups before you update.
+ *
+ * @category MultiSafepay
+ * @package Connect
+ * @author TechSupport <techsupport@multisafepay.com>
+ * @copyright Copyright (c) 2017 MultiSafepay, Inc. (http://www.multisafepay.com)
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+/**
  * 	MultiSafepay
- * 	Date: 27-1-2017
- * 	Version: 1.1.0
+ * 	Date: 17-1-2018
+ * 	Version: 1.2.0
  * 	Author: Ruud Jonk
  * 	Email: ruud@multisafepay.com
  */
@@ -200,7 +221,8 @@ if (defined('PAYMENT_NOTIFICATION')) {
     if (is_array($itemlist)) {
         $cart_items = "<ul>\n";
         foreach ($itemlist as $product) {
-            $cart_items .= "<li>" . $product['amount'] . " x : " . $product['product'] . " : " . $product['price'] . "</li>\n";
+            $product_price = fn_format_price_by_currency($product['price'], CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY);
+            $cart_items .= "<li>" . $product['amount'] . " x : " . $product['product'] . " : " . $product_price . "</li>\n";
         }
         $cart_items .= "</ul>\n";
     }
@@ -225,16 +247,23 @@ if (defined('PAYMENT_NOTIFICATION')) {
     //$msp->merchant['cancel_url']       	= 	Registry::get('config.current_location') . "/$index_script?dispatch=payment_notification.cancel&payment=multisafepay_".strtolower($processor_data['processor_params']['gateway'])."&transactionid=".$order_id;
     //$msp->merchant['redirect_url'] 	   	= 	Registry::get('config.current_location') . "/$index_script?dispatch=payment_notification.return&payment=multisafepay_".strtolower($processor_data['processor_params']['gateway']);	
 
-    $url = 'payment_notification.notify&payment=multisafepay_' . strtolower($processor_data['processor_params']['gateway']) . '&type=initial';
+    $gateway_url_postfix = strtolower($processor_data['processor_params']['gateway']);
+    if ($gateway_url_postfix == "mistercash") { //hotfix for bancontact/mistercash url
+        $gateway_url_postfix = "bancontact";
+    } elseif ($gateway_url_postfix == "psafecard") { //hotfix for psafecard
+        $gateway_url_postfix = "paysafecard";
+    }
+
+    $url = 'payment_notification.notify&payment=multisafepay_' . $gateway_url_postfix . '&type=initial';
     $url = fn_url($url, AREA, 'current');
 
     $msp->merchant['notification_url'] = $url;
 
-    $url = 'payment_notification.cancel&payment=multisafepay_' . strtolower($processor_data['processor_params']['gateway']) . '&transactionid=' . $order_id;
+    $url = 'payment_notification.cancel&payment=multisafepay_' . $gateway_url_postfix . '&transactionid=' . $order_id;
     $url = fn_url($url, AREA, 'current');
     $msp->merchant['cancel_url'] = $url;
 
-    $url = 'payment_notification.return&payment=multisafepay_' . strtolower($processor_data['processor_params']['gateway']);
+    $url = 'payment_notification.return&payment=multisafepay_' . $gateway_url_postfix;
     $url = fn_url($url, AREA, 'current');
     $msp->merchant['redirect_url'] = $url;
 
@@ -257,98 +286,100 @@ if (defined('PAYMENT_NOTIFICATION')) {
 
     $msp->transaction['id'] = $order_id;
     $msp->transaction['currency'] = ($order_info['secondary_currency'] ? $order_info['secondary_currency'] : $processor_data['processor_params']['currency']);
-    $msp->transaction['amount'] = $order_info['total'] * 100;
+    $msp->cart->currency = $msp->transaction['currency'];
+    $msp->transaction['amount'] = fn_format_price_by_currency($order_info['total'], CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY) * 100;
     $msp->transaction['description'] = 'Order #' . $msp->transaction['id'];
     $msp->transaction['items'] = $cart_items;
-    $msp->transaction['gateway'] = $processor_data['processor_params']['gateway'];
+    $msp->transaction['gateway'] = getGateway($processor_data['processor_params']['gateway']);
     $msp->plugin_name = 'CS-Cart 4.x';
-    $msp->version = '1.1.0';
+    $msp->version = '1.2.0';
 
     $msp->plugin['shop'] = 'CS-Cart';
     $msp->plugin['shop_version'] = '4';
-    $msp->plugin['plugin_version'] = '1.1.0';
+    $msp->plugin['plugin_version'] = '1.2.0';
     $msp->plugin['partner'] = '';
     $msp->plugin['shop_root_url'] = Registry::get('config.current_location');
 
     $taxes = array();
 
-    if ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer'])) {
-        $msp->extravars = $order_info['payment_info']['issuer'];
-        $url = $msp->startDirectXMLTransaction();
-    } elseif ($processor_data['processor_params']['gateway'] == 'PAYAFTER' || $processor_data['processor_params']['gateway'] == 'KLARNA' || $processor_data['processor_params']['gateway'] == 'EINVOICE') {
-        $items = $order_info['products'];
+    $items = $order_info['products'];
 
-        //Add the products
-        foreach ($items as $item) {
-            $product_data = fn_get_product_data($item['product_id'], $_SESSION['auth'], $order_info['lang_code'], '', true, true, true, true, false, true, true);
+    //Add the products
+    foreach ($items as $item) {
+        $product_data = fn_get_product_data($item['product_id'], $_SESSION['auth'], $order_info['lang_code'], '', true, true, true, true, false, true, true);
 
-            foreach ($product_data['tax_ids'] as $key => $value) {
-                $taxid = $value;
-                $taxed = $order_info['taxes'][$product_data[$value]]['price_includes_tax'];
-            }
-
-            if ($taxed == 'N') {
-                $product_price = $item['price'];
-            } else {
-                $btw = $item['price'] / (100 + $order_info['taxes'][$taxid]['rate_value']) * $order_info['taxes'][$taxid]['rate_value'];
-                $product_price = $item['price'] - $btw;
-            }
-
-            $cart_item_msp = new MspItem($item['product'], '', $item['amount'], $product_price, 'KG', 0);
-            $msp->cart->AddItem($cart_item_msp);
-            $cart_item_msp->SetMerchantItemId($item['product_code']);
-            //$cart_item_msp->SetTaxTableSelector('P_'.$item['item_id']);
-            $cart_item_msp->SetTaxTableSelector($taxid);
+        $taxid = 'BTW0';
+        foreach ($product_data['tax_ids'] as $key => $value) {
+            $taxid = $value;
+            $taxed = $order_info['taxes'][$product_data[$value]]['price_includes_tax'];
         }
 
-
-        //add shipping line item
-
-        foreach ($order_info['shipping'] as $key => $shipper) {
-            if ($shipper['shipping_id'] == $_SESSION['cart']['chosen_shipping'][0]) {
-                if ($shipper['rate'] != 0) {
-                    foreach ($order_info['taxes'] as $key => $value) {
-                        if ($value['applies']['S'] != '0')
-                            $shiptaxselector = $key;
-                    }
-
-                    $taxed = $order_info['taxes'][$shiptaxselector]['price_includes_tax'];
-
-                    if ($taxed == 'N') {
-                        $shiping_price = $shipper['rate'];
-                    } elseif ($shiptaxselector) {
-                        $btw = $shipper['rate'] / (100 + $order_info['taxes'][$shiptaxselector]['rate_value']) * $order_info['taxes'][$shiptaxselector]['rate_value'];
-                        $shiping_price = $shipper['rate'] - $btw;
-                    } else {
-                        $shiping_price = $shipper['rate'];
-                    }
-
-                    $c_item = new MspItem($shipper['shipping'], 'Verzending', 1, $shiping_price, 'KG', 0);
-                    $c_item->SetMerchantItemId($key);
-                    //$c_item->SetTaxTableSelector('S_'.$key.'_0');
-
-                    if ($shiptaxselector) {
-                        $c_item->SetTaxTableSelector($shiptaxselector);
-                    } else {
-                        $c_item->SetTaxTableSelector('BTW0');
-                    }
-
-                    $msp->cart->AddItem($c_item);
-                }
-            }
-        }
-
-        //Add payment surcharge
-        $taxed = $order_info['taxes'][$order_info['payment_method']['tax_ids'][0]]['price_includes_tax'];
         if ($taxed == 'N') {
-            $surcharge_price = $order_info['payment_method']['a_surcharge'];
+            $product_price = $item['price'];
         } else {
-            $btw = $order_info['payment_method']['a_surcharge'] / (100 + $order_info['taxes'][$order_info['payment_method']['tax_ids'][0]]['rate_value']) * $order_info['taxes'][$order_info['payment_method']['tax_ids'][0]]['rate_value'];
-            $surcharge_price = $order_info['payment_method']['a_surcharge'] - $btw;
+            $btw = $item['price'] / (100 + $order_info['taxes'][$taxid]['rate_value']) * $order_info['taxes'][$taxid]['rate_value'];
+            $product_price = $item['price'] - $btw;
         }
 
-        $c_item = new MspItem($order_info['payment_method']['payment'], 'Betaal na ontvangst Fee', 1, $surcharge_price, 'KG', 0);
-        $c_item->SetMerchantItemId($order_info['payment_method']['payment_id']);
+        $cart_item_msp = new MspItem($item['product'], '', $item['amount'], fn_format_price_by_currency($product_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
+        $cart_item_msp->SetMerchantItemId($item['product_code']);
+        //$cart_item_msp->SetTaxTableSelector('P_'.$item['item_id']);
+        $cart_item_msp->SetTaxTableSelector($taxid);
+        $msp->cart->AddItem($cart_item_msp);
+    }
+
+
+
+
+    //add shipping line item
+
+    foreach ($order_info['shipping'] as $key => $shipper) {
+        if ($shipper['shipping_id'] == $_SESSION['cart']['chosen_shipping'][0]) {
+            if ($shipper['rate'] != 0) {
+                foreach ($order_info['taxes'] as $key => $value) {
+                    if ($value['applies']['S'] != '0')
+                        $shiptaxselector = $key;
+                }
+
+                $taxed = $order_info['taxes'][$shiptaxselector]['price_includes_tax'];
+
+                if ($taxed == 'N') {
+                    $shiping_price = $shipper['rate'];
+                } elseif ($shiptaxselector) {
+                    $btw = $shipper['rate'] / (100 + $order_info['taxes'][$shiptaxselector]['rate_value']) * $order_info['taxes'][$shiptaxselector]['rate_value'];
+                    $shiping_price = $shipper['rate'] - $btw;
+                } else {
+                    $shiping_price = $shipper['rate'];
+                }
+
+                $c_item = new MspItem($shipper['shipping'], 'Verzending', 1, fn_format_price_by_currency($shiping_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
+                $c_item->SetMerchantItemId('msp-shipping');
+                //$c_item->SetTaxTableSelector('S_'.$key.'_0');
+
+                if ($shiptaxselector) {
+                    $c_item->SetTaxTableSelector($shiptaxselector);
+                } else {
+                    $c_item->SetTaxTableSelector('BTW0');
+                }
+
+                $msp->cart->AddItem($c_item);
+            }
+        }
+    }
+
+    //Add payment surcharge
+    $taxes_payment_method = $order_info['payment_method']['tax_ids'];
+    if (empty($taxes_payment_method)) {
+        $surcharge_price = $order_info['payment_method']['a_surcharge'] + $order_info['payment_method']['p_surcharge'] * $order_info['subtotal'] / 100;
+    } else {
+        $total_surcharge = $order_info['payment_method']['a_surcharge'] + $order_info['payment_method']['p_surcharge'] * $order_info['subtotal'] / 100;
+        $btw = $total_surcharge / (100 + $order_info['taxes'][$order_info['payment_method']['tax_ids'][0]]['rate_value']) * $order_info['taxes'][$order_info['payment_method']['tax_ids'][0]]['rate_value'];
+        $surcharge_price = $total_surcharge - $btw;
+    }
+
+    if ($surcharge_price > 0) {
+        $c_item = new MspItem($order_info['payment_method']['payment'], 'Payment Fee', 1, fn_format_price_by_currency($surcharge_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
+        $c_item->SetMerchantItemId('payment-fee');
 
         $ptax = $order_info['payment_method']['tax_ids'];
         foreach ($ptax as $key => $value) {
@@ -376,30 +407,32 @@ if (defined('PAYMENT_NOTIFICATION')) {
                 $msp->cart->AddAlternateTaxTables($taxtable);
             }
         }
+    }
 
-        //If there are coupons applied add coupon as a product with negative price
-        if (isset($order_info['promotions'])) {
-            foreach ($order_info['promotions'] as $key => $value) {
-                if ($order_info['subtotal_discount'] != '0.00') {
-                    $discount_price = $order_info['subtotal_discount'];
-                    $coupon = new MspItem($value['name'], 'Discount Price', 1, ('-' . $discount_price));
-                    $coupon->SetTaxTableSelector('BTW0');
-                    $msp->cart->AddItem($coupon);
-                }
+    //If there are coupons applied add coupon as a product with negative price
+    if (isset($order_info['promotions'])) {
+        foreach ($order_info['promotions'] as $key => $value) {
+            if ($order_info['subtotal_discount'] != '0.00') {
+                $discount_price = $order_info['subtotal_discount'];
+                $coupon = new MspItem($value['name'], 'Discount Price', 1, ('-' . fn_format_price_by_currency($discount_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY)));
+                $coupon->SetTaxTableSelector('BTW0');
+                $msp->cart->AddItem($coupon);
             }
         }
+    }
 
-        $percentage = '0.00';
-        $taxname = 'BTW0';
-        $taxtable = new MspAlternateTaxTable($taxname, 'true');
-        $taxrule = new MspAlternateTaxRule($percentage);
-        $taxtable->AddAlternateTaxRules($taxrule);
-        $msp->cart->AddAlternateTaxTables($taxtable);
+    $percentage = '0.00';
+    $taxname = 'BTW0';
+    $taxtable = new MspAlternateTaxTable($taxname, 'true');
+    $taxrule = new MspAlternateTaxRule($percentage);
+    $taxtable->AddAlternateTaxRules($taxrule);
+    $msp->cart->AddAlternateTaxTables($taxtable);
 
-
-        $url = $msp->startCheckout();
+    if ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer'])) {
+        $msp->extravars = $order_info['payment_info']['issuer'];
+        $url = $msp->startDirectXMLTransaction();
     } else {
-        $url = $msp->startTransaction();
+        $url = $msp->startCheckout();
     }
     if (isset($processor_data['processor_params']['debug'])) {
         if ($processor_data['processor_params']['debug'] == 'YES') {
@@ -414,7 +447,6 @@ if (defined('PAYMENT_NOTIFICATION')) {
             exit;
         }
     }
-
 
     if (!isset($msp->error)) {
         fn_redirect($url, true, true);
@@ -433,6 +465,11 @@ function parseFeed()
 {
     echo 'parce feed';
     exit;
+}
+
+function getGateway($gateway_code)
+{
+    return ($gateway_code == "WALLET") ? "" : $gateway_code;
 }
 
 ?>
