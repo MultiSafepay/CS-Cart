@@ -347,41 +347,44 @@ if (defined('PAYMENT_NOTIFICATION')) {
         }
 
         //Add payment surcharge
-        $taxed = $order_info['taxes'][$order_info['payment_method']['tax_ids'][0]]['price_includes_tax'];
-        if ($taxed == 'N') {
-            $surcharge_price = $order_info['payment_method']['a_surcharge'];
+        $taxes_payment_method = $order_info['payment_method']['tax_ids'];
+        if (empty($taxes_payment_method)) {
+            $surcharge_price = $order_info['payment_method']['a_surcharge'] + $order_info['payment_method']['p_surcharge'] * $order_info['subtotal'] / 100;
         } else {
-            $btw = $order_info['payment_method']['a_surcharge'] / (100 + $order_info['taxes'][$order_info['payment_method']['tax_ids'][0]]['rate_value']) * $order_info['taxes'][$order_info['payment_method']['tax_ids'][0]]['rate_value'];
-            $surcharge_price = $order_info['payment_method']['a_surcharge'] - $btw;
+            $total_surcharge = $order_info['payment_method']['a_surcharge'] + $order_info['payment_method']['p_surcharge'] * $order_info['subtotal'] / 100;
+            $btw = $total_surcharge / (100 + $order_info['taxes'][$order_info['payment_method']['tax_ids'][0]]['rate_value']) * $order_info['taxes'][$order_info['payment_method']['tax_ids'][0]]['rate_value'];
+            $surcharge_price = $total_surcharge - $btw;
         }
 
-        $c_item = new MspItem($order_info['payment_method']['payment'], 'Betaal na ontvangst Fee', 1, fn_format_price_by_currency($surcharge_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
-        $c_item->SetMerchantItemId('payment-fee');
+        if ($surcharge_price > 0) {
+            $c_item = new MspItem($order_info['payment_method']['payment'], 'Payment Fee', 1, fn_format_price_by_currency($surcharge_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
+            $c_item->SetMerchantItemId('payment-fee');
 
-        $ptax = $order_info['payment_method']['tax_ids'];
-        foreach ($ptax as $key => $value) {
-            $taxselector = $value;
-        }
+            $ptax = $order_info['payment_method']['tax_ids'];
+            foreach ($ptax as $key => $value) {
+                $taxselector = $value;
+            }
 
-        if ($taxselector) {
-            $c_item->SetTaxTableSelector($taxselector);
-        } else {
-            $c_item->SetTaxTableSelector('BTW0');
-        }
-        $msp->cart->AddItem($c_item);
+            if ($taxselector) {
+                $c_item->SetTaxTableSelector($taxselector);
+            } else {
+                $c_item->SetTaxTableSelector('BTW0');
+            }
+            $msp->cart->AddItem($c_item);
 
-        //add available tax rates
-        $taxes = array();
-        foreach ($order_info['taxes'] as $key => $tax) {
+            //add available tax rates
+            $taxes = array();
+            foreach ($order_info['taxes'] as $key => $tax) {
 
-            if (!in_array($key, $taxes)) {
-                $taxes[] = $key;
-                $percentage = $tax['rate_value'] / 100;
-                $taxname = $key;
-                $taxtable = new MspAlternateTaxTable($taxname, 'true');
-                $taxrule = new MspAlternateTaxRule($percentage);
-                $taxtable->AddAlternateTaxRules($taxrule);
-                $msp->cart->AddAlternateTaxTables($taxtable);
+                if (!in_array($key, $taxes)) {
+                    $taxes[] = $key;
+                    $percentage = $tax['rate_value'] / 100;
+                    $taxname = $key;
+                    $taxtable = new MspAlternateTaxTable($taxname, 'true');
+                    $taxrule = new MspAlternateTaxRule($percentage);
+                    $taxtable->AddAlternateTaxRules($taxrule);
+                    $msp->cart->AddAlternateTaxTables($taxtable);
+                }
             }
         }
 
