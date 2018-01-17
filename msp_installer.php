@@ -1,26 +1,25 @@
 <?php
 
 /**
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade the MultiSafepay plugin
-* to newer versions in the future. If you wish to customize the plugin for your
-* needs please document your changes and make backups before you update.
-*
-* @category MultiSafepay
-* @package Connect
-* @author TechSupport <techsupport@multisafepay.com>
-* @copyright Copyright (c) 2017 MultiSafepay, Inc. (http://www.multisafepay.com)
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-* PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-* ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-* WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade the MultiSafepay plugin
+ * to newer versions in the future. If you wish to customize the plugin for your
+ * needs please document your changes and make backups before you update.
+ *
+ * @category MultiSafepay
+ * @package Connect
+ * @author TechSupport <techsupport@multisafepay.com>
+ * @copyright Copyright (c) 2017 MultiSafepay, Inc. (http://www.multisafepay.com)
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 define('BOOTSTRAP', '');
 if (function_exists('date_default_timezone_set')) {
     date_default_timezone_set('Europe/Amsterdam');
@@ -88,14 +87,14 @@ echo $html;
 function upd($naam, $query, $config)
 {
     $mysqli = new mysqli($config['db_host'], $config['db_user'], $config['db_password'], $config['db_name']);
-    
+
     if ($mysqli->connect_errno) {
         printf("Connect failed: %s\n", $mysqli->connect_error);
         exit();
     }
 
     $q = $mysqli->query("SELECT * FROM `" . $config['table_prefix'] . "payment_processors` WHERE `processor` = 'MultiSafepay " . $naam . "'");
-    
+
     if (!$q || ($n = mysqli_num_rows($q)) == 0) {
         $ex = $mysqli->query("INSERT INTO " . $query);
         echo 'insert ' . $ex . '<br/>';
