@@ -139,7 +139,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
                 if ($details['ewallet']['id'] != '' && $details['paymentdetails']['type'] != 'BANKTRANS') {
                     if ($status == 'initialized' || $status == 'expired') {
                         fn_change_order_status($_REQUEST['transactionid'], $pp_response['order_status'], '', false);
-                        //fn_order_placement_routines($_REQUEST['transactionid'], false);		
+                        //fn_order_placement_routines($_REQUEST['transactionid'], false);
                     } else {
                         fn_change_order_status($_REQUEST['transactionid'], $pp_response['order_status'], '', true);
                         fn_finish_payment($order_id, $pp_response, true);
@@ -245,7 +245,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $msp->merchant['site_code'] = $processor_data['processor_params']['securitycode'];
     //$msp->merchant['notification_url'] 	= 	Registry::get('config.current_location') . "/$index_script?dispatch=payment_notification.notify&payment=multisafepay_".strtolower($processor_data['processor_params']['gateway'])."&type=initial";
     //$msp->merchant['cancel_url']       	= 	Registry::get('config.current_location') . "/$index_script?dispatch=payment_notification.cancel&payment=multisafepay_".strtolower($processor_data['processor_params']['gateway'])."&transactionid=".$order_id;
-    //$msp->merchant['redirect_url'] 	   	= 	Registry::get('config.current_location') . "/$index_script?dispatch=payment_notification.return&payment=multisafepay_".strtolower($processor_data['processor_params']['gateway']);	
+    //$msp->merchant['redirect_url'] 	   	= 	Registry::get('config.current_location') . "/$index_script?dispatch=payment_notification.return&payment=multisafepay_".strtolower($processor_data['processor_params']['gateway']);
 
     $gateway_url_postfix = strtolower($processor_data['processor_params']['gateway']);
     if ($gateway_url_postfix == "mistercash") { //hotfix for bancontact/mistercash url
@@ -271,6 +271,8 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $msp->merchant['close_window'] = true;
     //$msp->customer['locale']           	= 	$processor_data['processor_params']['language'];
     $msp->customer['locale'] = isset($order_info['lang_code']) ? strtolower($order_info['lang_code']) : $processor_data['processor_params']['language'];
+    $msp->customer['locale'] .= '_' . $order_info['b_country'];
+
     $msp->customer['firstname'] = $order_info['b_firstname'];
     $msp->customer['lastname'] = $order_info['b_lastname'];
 
