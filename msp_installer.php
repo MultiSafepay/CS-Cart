@@ -55,6 +55,7 @@ $payments = array(
     'BELFIUS' => 'Belfius',
     'SANTANDER' => 'Santander Betaalplan',
     'ALIPAY' => 'Alipay',
+    'TRUSTLY' => 'Trustly',
 );
 
 
