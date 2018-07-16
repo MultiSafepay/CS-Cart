@@ -51,7 +51,7 @@ $payments = array(
     'KLARNA' => 'Klarna Invoice',
     'AMEX' => 'American Express',
     'ING' => 'ING-Homepay',
-    'KBC' => 'KBC/CBC',
+    'KBC' => 'KBC',
     'BELFIUS' => 'Belfius',
 );
 
