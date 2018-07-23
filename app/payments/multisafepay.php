@@ -123,6 +123,10 @@ if (defined('PAYMENT_NOTIFICATION')) {
                         $pp_response['order_status'] = $msp_statuses['refunded'];
                         $pp_response['reason_text'] = 'Transaction refunded';
                         break;
+                    case "partial_refunded":
+                        $pp_response['order_status'] = $msp_statuses['partial_refunded'];
+                        $pp_response['reason_text'] = 'Transaction partial refunded';
+                        break;
                     case "expired":
                         $pp_response['order_status'] = $msp_statuses['expired'];
                         $pp_response['reason_text'] = 'Transaction expired';

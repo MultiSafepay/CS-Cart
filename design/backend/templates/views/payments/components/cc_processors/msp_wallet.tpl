@@ -82,6 +82,15 @@
 </div>
 
 <div class="form-field">
+    <label for="elm_multisafepay_partial_refunded">Partial refunded status:</label>
+    <select name="payment_data[processor_params][statuses][partial_refunded]" id="elm_multisafepay_partial_refunded">
+        {foreach from=$statuses item="s" key="k"}
+            <option value="{$k}" {if (isset($processor_params.statuses.partial_refunded) && $processor_params.statuses.partial_refunded == $k) || (!isset($processor_params.statuses.partial_refunded) && $k == 'I')}selected="selected"{/if}>{$s}</option>
+        {/foreach}
+    </select>
+</div>
+
+<div class="form-field">
     <label for="elm_multisafepay_completed">Complete status:</label>
     <select name="payment_data[processor_params][statuses][completed]" id="elm_multisafepay_completed">
         {foreach from=$statuses item="s" key="k"}
