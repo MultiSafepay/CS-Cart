@@ -379,9 +379,12 @@ if (defined('PAYMENT_NOTIFICATION')) {
         $surcharge_price = $total_surcharge - $btw;
     }
 
+
     if ($surcharge_price > 0) {
-        $c_item = new MspItem($order_info['payment_method']['payment'], 'Payment Fee', 1, fn_format_price_by_currency($surcharge_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
-        $c_item->SetMerchantItemId('payment-fee');
+
+        $surcharge_title = $order_info['payment_method']['surcharge_title'] ?: __('payment_surcharge');
+        $c_item = new MspItem($surcharge_title,'Surcharge',  1, fn_format_price_by_currency($surcharge_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
+        $c_item->SetMerchantItemId('Surcharge');
 
         $ptax = $order_info['payment_method']['tax_ids'];
         foreach ($ptax as $key => $value) {
