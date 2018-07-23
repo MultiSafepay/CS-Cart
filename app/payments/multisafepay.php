@@ -432,6 +432,9 @@ if (defined('PAYMENT_NOTIFICATION')) {
 
     if ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer'])) {
         $msp->extravars = $order_info['payment_info']['issuer'];
+    }
+
+    if (in_array ($processor_data['processor_params']['gateway'], array ('IDEAL', 'KBC'))) {
         $url = $msp->startDirectXMLTransaction();
     } else {
         $url = $msp->startCheckout();
