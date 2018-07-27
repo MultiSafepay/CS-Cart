@@ -53,6 +53,7 @@ $payments = array(
     'ING' => 'ING-Homepay',
     'KBC' => 'KBC',
     'BELFIUS' => 'Belfius',
+    'SANTANDER' => 'Santander Betaalplan',
 );
 
 
