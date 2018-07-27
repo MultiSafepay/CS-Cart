@@ -138,18 +138,18 @@ if (defined('PAYMENT_NOTIFICATION')) {
 
                 if ($details['ewallet']['id'] != '' && $details['paymentdetails']['type'] != 'BANKTRANS') {
                     if ($status == 'initialized' || $status == 'expired') {
-                        fn_change_order_status($_REQUEST['transactionid'], $pp_response['order_status'], '', false);
+                        fn_change_order_status($_REQUEST['transactionid'], $pp_response['order_status'], '');
                         //fn_order_placement_routines($_REQUEST['transactionid'], false);
                     } else {
-                        fn_change_order_status($_REQUEST['transactionid'], $pp_response['order_status'], '', true);
-                        fn_finish_payment($order_id, $pp_response, true);
+                        fn_change_order_status($_REQUEST['transactionid'], $pp_response['order_status'], '');
+                        fn_finish_payment($order_id, $pp_response);
                     }
                 } elseif ($details['ewallet']['id'] != '' && $details['paymentdetails']['type'] == 'BANKTRANS' && $mode != 'return') {
                     if ($status == 'initialized') {
-                        fn_change_order_status($_REQUEST['transactionid'], $msp_statuses['initialized'], '', false);
+                        fn_change_order_status($_REQUEST['transactionid'], $msp_statuses['initialized'], '');
                     } else {
-                        fn_change_order_status($_REQUEST['transactionid'], $pp_response['order_status'], '', true);
-                        fn_finish_payment($order_id, $pp_response, true);
+                        fn_change_order_status($_REQUEST['transactionid'], $pp_response['order_status'], '');
+                        fn_finish_payment($order_id, $pp_response);
                     }
                 }
             }
@@ -167,11 +167,11 @@ if (defined('PAYMENT_NOTIFICATION')) {
 
                 $order_info = fn_get_order_info($_REQUEST['transactionid'], true);
                 //if ($order_info['status'] == 'N' || $order_info['status'] == $msp_statuses['initialized'] ) {
-                fn_change_order_status($_REQUEST['transactionid'], 'O', '', false);
+                fn_change_order_status($_REQUEST['transactionid'], 'O', '');
                 //}
 
 
-                fn_order_placement_routines('route', $_REQUEST['transactionid'], true);
+                fn_order_placement_routines('route', $_REQUEST['transactionid']);
 
                 exit;
             } else {
@@ -182,10 +182,10 @@ if (defined('PAYMENT_NOTIFICATION')) {
                 $msp_statuses = $processor_data['processor_params']['statuses'];
 
                 if ($order_info['status'] == 'N') {
-                    fn_change_order_status($_REQUEST['transactionid'], $msp_statuses['initialized'], '', false);
+                    fn_change_order_status($_REQUEST['transactionid'], $msp_statuses['initialized'], '');
                 }
 
-                fn_order_placement_routines('route', $_REQUEST['transactionid'], true);
+                fn_order_placement_routines('route', $_REQUEST['transactionid']);
                 exit;
             }
         }
@@ -209,7 +209,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
         $pp_response['order_status'] = $msp_statuses['cancelled'];
         $pp_response["reason_text"] = fn_get_lang_var('text_transaction_cancelled');
 
-        fn_finish_payment($_REQUEST['transactionid'], $pp_response, false);
+        fn_finish_payment($_REQUEST['transactionid'], $pp_response);
         fn_order_placement_routines('route', $_REQUEST['transactionid']);
         exit;
     } elseif ($mode == 'process') {
@@ -378,7 +378,6 @@ if (defined('PAYMENT_NOTIFICATION')) {
         $btw = $total_surcharge / (100 + $order_info['taxes'][$order_info['payment_method']['tax_ids'][0]]['rate_value']) * $order_info['taxes'][$order_info['payment_method']['tax_ids'][0]]['rate_value'];
         $surcharge_price = $total_surcharge - $btw;
     }
-
 
     if ($surcharge_price > 0) {
 
