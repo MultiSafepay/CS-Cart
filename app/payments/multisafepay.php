@@ -434,7 +434,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
         $msp->extravars = $order_info['payment_info']['issuer'];
     }
 
-    if (in_array ($processor_data['processor_params']['gateway'], array ('IDEAL', 'KBC'))) {
+    if (in_array ($processor_data['processor_params']['gateway'], array ('IDEAL', 'KBC', 'INGHOME', 'ALIPAY'))) {
         $url = $msp->startDirectXMLTransaction();
     } else {
         $url = $msp->startCheckout();
