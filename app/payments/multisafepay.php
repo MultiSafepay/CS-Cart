@@ -256,6 +256,8 @@ if (defined('PAYMENT_NOTIFICATION')) {
         $gateway_url_postfix = "bancontact";
     } elseif ($gateway_url_postfix == "psafecard") { //hotfix for psafecard
         $gateway_url_postfix = "paysafecard";
+    } elseif ($gateway_url_postfix == "inghome") { //hotfix for INGHome
+        $gateway_url_postfix = "ing";
     }
 
     $url = 'payment_notification.notify&payment=multisafepay_' . $gateway_url_postfix . '&type=initial';

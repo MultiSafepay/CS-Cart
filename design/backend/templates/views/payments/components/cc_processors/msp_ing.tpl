@@ -13,7 +13,7 @@
     </select>
 </div>
 
-<input type="hidden" name="payment_data[processor_params][gateway]" maxlength="20" id="store_id" value="ING" class="input-text" />
+<input type="hidden" name="payment_data[processor_params][gateway]" maxlength="20" id="store_id" value="INGHOME" class="input-text" />
 
 {* account id *}
 <div class="form-field">
