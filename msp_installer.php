@@ -57,6 +57,7 @@ $payments = array(
     'ALIPAY' => 'Alipay',
     'TRUSTLY' => 'Trustly',
     'TRUSTPAY' => 'TrustPay',
+    'EPS' => 'EPS',
     'IDEALQR' => 'iDEAL QR',
 );
 
