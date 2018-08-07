@@ -59,6 +59,7 @@ $payments = array(
     'TRUSTPAY' => 'TrustPay',
     'EPS' => 'EPS',
     'IDEALQR' => 'iDEAL QR',
+    'AFTERPAY' => 'AfterPay',
 );
 
 
