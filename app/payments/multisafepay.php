@@ -292,6 +292,15 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $msp->customer['forwardedip'] = $ip['proxy'];
     $msp->parseCustomerAddress($order_info['b_address']);
 
+    $msp->delivery['firstname'] = $order_info['s_firstname'];
+    $msp->delivery['lastname'] = $order_info['s_lastname'];
+    $msp->delivery['zipcode'] = $order_info['s_zipcode'];
+    $msp->delivery['city'] = $order_info['s_city'];
+    $msp->delivery['state'] = $order_info['s_state'];
+    $msp->delivery['phone'] = $order_info['s_phone'];
+    $msp->delivery['country'] = $order_info['s_country'];
+    $msp->parseDeliveryAddress($order_info['s_address']);
+
     $msp->transaction['id'] = $order_id;
     $msp->transaction['currency'] = ($order_info['secondary_currency'] ? $order_info['secondary_currency'] : $processor_data['processor_params']['currency']);
     $msp->cart->currency = $msp->transaction['currency'];
