@@ -24,7 +24,7 @@
 /**
  * 	MultiSafepay
  * 	Date: 17-1-2018
- * 	Version: 1.2.0
+ * 	Version: 1.3.0
  * 	Author: Ruud Jonk
  * 	Email: ruud@multisafepay.com
  */
@@ -309,11 +309,11 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $msp->transaction['items'] = $cart_items;
     $msp->transaction['gateway'] = getGateway($processor_data['processor_params']['gateway']);
     $msp->plugin_name = 'CS-Cart 4.x';
-    $msp->version = '1.2.0';
+    $msp->version = '1.3.0';
 
     $msp->plugin['shop'] = 'CS-Cart';
     $msp->plugin['shop_version'] = '4';
-    $msp->plugin['plugin_version'] = '1.2.0';
+    $msp->plugin['plugin_version'] = '1.3.0';
     $msp->plugin['partner'] = '';
     $msp->plugin['shop_root_url'] = Registry::get('config.current_location');
 
