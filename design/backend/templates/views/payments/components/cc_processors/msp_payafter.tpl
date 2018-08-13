@@ -82,7 +82,7 @@
     <label for="elm_multisafepay_initialized">Initialized status:</label>
     <select name="payment_data[processor_params][statuses][initialized]" id="elm_multisafepay_initialized">
         {foreach from=$statuses item="s" key="k"}
-            <option value="{$k}" {if (isset($processor_params.statuses.initialized) && $processor_params.statuses.initialized == $k) || (!isset($processor_params.statuses.initialized) && $k == 'I')}selected="selected"{/if}>{$s}</option>
+            <option value="{$k}" {if (isset($processor_params.statuses.initialized) && $processor_params.statuses.initialized == $k) || (!isset($processor_params.statuses.initialized) && $k == 'O')}selected="selected"{/if}>{$s}</option>
         {/foreach}
     </select>
 </div>
@@ -118,7 +118,7 @@
     <label for="elm_multisafepay_cancelled">Cancelled status:</label>
     <select name="payment_data[processor_params][statuses][cancelled]" id="elm_multisafepay_cancelled">
         {foreach from=$statuses item="s" key="k"}
-            <option value="{$k}" {if (isset($processor_params.statuses.cancelled) && $processor_params.statuses.cancelled == $k) || (!isset($processor_params.statuses.cancelled) && $k == 'O')}selected="selected"{/if}>{$s}</option>
+            <option value="{$k}" {if (isset($processor_params.statuses.cancelled) && $processor_params.statuses.cancelled == $k) || (!isset($processor_params.statuses.cancelled) && $k == 'I')}selected="selected"{/if}>{$s}</option>
         {/foreach}
     </select>
 </div>
@@ -144,7 +144,7 @@
     <label for="elm_multisafepay_declined">Declined status:</label>
     <select name="payment_data[processor_params][statuses][declined]" id="elm_multisafepay_declined">
         {foreach from=$statuses item="s" key="k"}
-            <option value="{$k}" {if (isset($processor_params.statuses.declined) && $processor_params.statuses.declined == $k) || (!isset($processor_params.statuses.declined) && $k == 'O')}selected="selected"{/if}>{$s}</option>
+            <option value="{$k}" {if (isset($processor_params.statuses.declined) && $processor_params.statuses.declined == $k) || (!isset($processor_params.statuses.declined) && $k == 'D')}selected="selected"{/if}>{$s}</option>
         {/foreach}
     </select>
 </div>
@@ -153,7 +153,7 @@
     <label for="elm_multisafepay_voided">Voided status:</label>
     <select name="payment_data[processor_params][statuses][voided]" id="elm_multisafepay_voided">
         {foreach from=$statuses item="s" key="k"}
-            <option value="{$k}" {if (isset($processor_params.statuses.voided) && $processor_params.statuses.voided == $k) || (!isset($processor_params.statuses.voided) && $k == 'O')}selected="selected"{/if}>{$s}</option>
+            <option value="{$k}" {if (isset($processor_params.statuses.voided) && $processor_params.statuses.voided == $k) || (!isset($processor_params.statuses.voided) && $k == 'D')}selected="selected"{/if}>{$s}</option>
         {/foreach}
     </select>
 </div>
