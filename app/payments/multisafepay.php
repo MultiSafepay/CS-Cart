@@ -21,13 +21,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * 	MultiSafepay
- * 	Date: 17-1-2018
- * 	Version: 1.3.0
- * 	Author: Ruud Jonk
- * 	Email: ruud@multisafepay.com
- */
 use Tygh\Http;
 use Tygh\Registry;
 
