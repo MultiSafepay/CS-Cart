@@ -80,7 +80,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
 
             $msp_statuses = $processor_data['processor_params']['statuses'];
 
-            if ($order_info['status'] != 'P' && $order_info['status'] != 'C') {
+            if ($order_info['status'] != 'P' && $order_info['status'] != 'C' || $status == "refunded" || $status == "partial_refunded") {
 
                 switch ($status) {
                     case "initialized":
