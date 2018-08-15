@@ -33,7 +33,7 @@ Paymentmethods:
 26. Trustpay
 27. Visa
 
-For support you can contact MultiSafepay by e-mail using techsupport @ multisafepay.com
+For support you can contact MultiSafepay by e-mail using techsupport@multisafepay.com
 
 # Installation
 For installation instructions please visit our site at
