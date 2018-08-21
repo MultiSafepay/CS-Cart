@@ -17,6 +17,8 @@
 + PLGCSCS-46: Support direct transactions for ING'HomePay / Alipay
 + PLGCSCS-30: Support direct transactions for KBC
 + PLGCSCS-39: Added disclaimer to new PHP files
++ PLGCSCS-77: Change defaults for order statuses
++ PLGCSCS-80: Status update on refund and partial refund
 
 ## Fixed ##
 + PLGCSCS-47: Refactor checkout_data when taxes are not set
