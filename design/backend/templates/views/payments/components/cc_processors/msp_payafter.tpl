@@ -51,7 +51,6 @@
     </select>
 </div>
 
-{assign var="statuses" value=$smarty.const.STATUSES_ORDER|fn_get_simple_statuses}
 
 <div class="form-field">
     <label for="minamount">Minimal amount:</label>
@@ -74,26 +73,16 @@
 <div class="form-field">
     <label for=ipaddresses">IP address:</label>
     <input type="text" name="payment_data[processor_params][ipaddresses]" maxlength="20" id="ipaddresses" value="{$processor_params.ipaddresses|escape}" class="input-text" />
-
 </div>
 
+
+{assign var="statuses" value=$smarty.const.STATUSES_ORDER|fn_get_simple_statuses}
 
 <div class="form-field">
     <label for="elm_multisafepay_initialized">Initialized status:</label>
     <select name="payment_data[processor_params][statuses][initialized]" id="elm_multisafepay_initialized">
         {foreach from=$statuses item="s" key="k"}
-            <option value="{$k}" {if (isset($processor_params.statuses.initialized) && $processor_params.statuses.initialized == $k) || (!isset($processor_params.statuses.initialized) && $k == 'I')}selected="selected"{/if}>{$s}</option>
-        {/foreach}
-    </select>
-</div>
-
-
-
-<div class="form-field">
-    <label for="elm_multisafepay_refunded">Refunded status:</label>
-    <select name="payment_data[processor_params][statuses][refunded]" id="elm_multisafepay_refunded">
-        {foreach from=$statuses item="s" key="k"}
-            <option value="{$k}" {if (isset($processor_params.statuses.refunded) && $processor_params.statuses.refunded == $k) || (!isset($processor_params.statuses.refunded) && $k == 'I')}selected="selected"{/if}>{$s}</option>
+            <option value="{$k}" {if (isset($processor_params.statuses.initialized) && $processor_params.statuses.initialized == $k) || (!isset($processor_params.statuses.initialized) && $k == 'O')}selected="selected"{/if}>{$s}</option>
         {/foreach}
     </select>
 </div>
@@ -117,25 +106,6 @@
 </div>
 
 <div class="form-field">
-    <label for="elm_multisafepay_expired">Expired status:</label>
-    <select name="payment_data[processor_params][statuses][expired]" id="elm_multisafepay_expired">
-        {foreach from=$statuses item="s" key="k"}
-            <option value="{$k}" {if (isset($processor_params.statuses.expired) && $processor_params.statuses.expired == $k) || (!isset($processor_params.statuses.expired) && $k == 'F')}selected="selected"{/if}>{$s}</option>
-        {/foreach}
-    </select>
-</div>
-
-
-<div class="form-field">
-    <label for="elm_multisafepay_voided">Voided status:</label>
-    <select name="payment_data[processor_params][statuses][voided]" id="elm_multisafepay_voided">
-        {foreach from=$statuses item="s" key="k"}
-            <option value="{$k}" {if (isset($processor_params.statuses.voided) && $processor_params.statuses.voided == $k) || (!isset($processor_params.statuses.voided) && $k == 'O')}selected="selected"{/if}>{$s}</option>
-        {/foreach}
-    </select>
-</div>
-
-<div class="form-field">
     <label for="elm_multisafepay_uncleared">Uncleared status:</label>
     <select name="payment_data[processor_params][statuses][uncleared]" id="elm_multisafepay_uncleared">
         {foreach from=$statuses item="s" key="k"}
@@ -144,29 +114,55 @@
     </select>
 </div>
 
+<div class="form-field">
+    <label for="elm_multisafepay_cancelled">Cancelled status:</label>
+    <select name="payment_data[processor_params][statuses][cancelled]" id="elm_multisafepay_cancelled">
+        {foreach from=$statuses item="s" key="k"}
+            <option value="{$k}" {if (isset($processor_params.statuses.cancelled) && $processor_params.statuses.cancelled == $k) || (!isset($processor_params.statuses.cancelled) && $k == 'I')}selected="selected"{/if}>{$s}</option>
+        {/foreach}
+    </select>
+</div>
+
+<div class="form-field">
+    <label for="elm_multisafepay_refunded">Refunded status:</label>
+    <select name="payment_data[processor_params][statuses][refunded]" id="elm_multisafepay_refunded">
+        {foreach from=$statuses item="s" key="k"}
+            <option value="{$k}" {if (isset($processor_params.statuses.refunded) && $processor_params.statuses.refunded == $k) || (!isset($processor_params.statuses.refunded) && $k == 'I')}selected="selected"{/if}>{$s}</option>
+        {/foreach}
+    </select>
+</div>
+<div class="form-field">
+    <label for="elm_multisafepay_partial_refunded">Partial refunded status:</label>
+    <select name="payment_data[processor_params][statuses][partial_refunded]" id="elm_multisafepay_partial_refunded">
+        {foreach from=$statuses item="s" key="k"}
+            <option value="{$k}" {if (isset($processor_params.statuses.partial_refunded) && $processor_params.statuses.partial_refunded == $k) || (!isset($processor_params.statuses.partial_refunded) && $k == 'I')}selected="selected"{/if}>{$s}</option>
+        {/foreach}
+    </select>
+</div>
 
 <div class="form-field">
     <label for="elm_multisafepay_declined">Declined status:</label>
     <select name="payment_data[processor_params][statuses][declined]" id="elm_multisafepay_declined">
         {foreach from=$statuses item="s" key="k"}
-            <option value="{$k}" {if (isset($processor_params.statuses.declined) && $processor_params.statuses.declined == $k) || (!isset($processor_params.statuses.declined) && $k == 'O')}selected="selected"{/if}>{$s}</option>
+            <option value="{$k}" {if (isset($processor_params.statuses.declined) && $processor_params.statuses.declined == $k) || (!isset($processor_params.statuses.declined) && $k == 'D')}selected="selected"{/if}>{$s}</option>
         {/foreach}
     </select>
 </div>
 
 <div class="form-field">
-    <label for="elm_multisafepay_cancelled">Cancelled status:</label>
-    <select name="payment_data[processor_params][statuses][cancelled]" id="elm_multisafepay_cancelled">
+    <label for="elm_multisafepay_voided">Voided status:</label>
+    <select name="payment_data[processor_params][statuses][voided]" id="elm_multisafepay_voided">
         {foreach from=$statuses item="s" key="k"}
-            <option value="{$k}" {if (isset($processor_params.statuses.cancelled) && $processor_params.statuses.cancelled == $k) || (!isset($processor_params.statuses.cancelled) && $k == 'O')}selected="selected"{/if}>{$s}</option>
+            <option value="{$k}" {if (isset($processor_params.statuses.voided) && $processor_params.statuses.voided == $k) || (!isset($processor_params.statuses.voided) && $k == 'D')}selected="selected"{/if}>{$s}</option>
         {/foreach}
     </select>
 </div>
 
 <div class="form-field">
-    <label for="debug">Debug:</label>
-    <select name="payment_data[processor_params][debug]" id="debug">
-        <option value="NO" {if $processor_params.debug == "NO"}selected="selected"{/if}>NO</option>
-        <option value="YES" {if $processor_params.debug == "YES"}selected="selected"{/if}>YES</option>
+    <label for="elm_multisafepay_expired">Expired status:</label>
+    <select name="payment_data[processor_params][statuses][expired]" id="elm_multisafepay_expired">
+        {foreach from=$statuses item="s" key="k"}
+            <option value="{$k}" {if (isset($processor_params.statuses.expired) && $processor_params.statuses.expired == $k) || (!isset($processor_params.statuses.expired) && $k == 'F')}selected="selected"{/if}>{$s}</option>
+        {/foreach}
     </select>
 </div>

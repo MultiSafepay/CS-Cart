@@ -11,7 +11,7 @@
  * @category MultiSafepay
  * @package Connect
  * @author TechSupport <techsupport@multisafepay.com>
- * @copyright Copyright (c) 2017 MultiSafepay, Inc. (http://www.multisafepay.com)
+ * @copyright Copyright (c) 2018 MultiSafepay, Inc. (https://www.multisafepay.com)
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
@@ -88,11 +88,11 @@ function fn_multisafepay_set_fastcheckout($payment_id, $order_id = 0, $order_inf
     $msp->transaction['description'] = 'Order #' . $msp->transaction['id'];
     $msp->transaction['items'] = $cart_items;
     $msp->plugin_name = 'CS-Cart 4.x';
-    $msp->version = '1.2.0';
+    $msp->version = '1.3.0';
 
     $msp->plugin['shop'] = 'CS-Cart';
     $msp->plugin['shop_version'] = '4';
-    $msp->plugin['plugin_version'] = '1.2.0';
+    $msp->plugin['plugin_version'] = '1.3.0';
     $msp->plugin['partner'] = '';
     $msp->plugin['shop_root_url'] = Registry::get('config.current_location');
 

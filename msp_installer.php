@@ -11,7 +11,7 @@
  * @category MultiSafepay
  * @package Connect
  * @author TechSupport <techsupport@multisafepay.com>
- * @copyright Copyright (c) 2017 MultiSafepay, Inc. (http://www.multisafepay.com)
+ * @copyright Copyright (c) 2018 MultiSafepay, Inc. (https://www.multisafepay.com)
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
@@ -51,8 +51,15 @@ $payments = array(
     'KLARNA' => 'Klarna Invoice',
     'AMEX' => 'American Express',
     'ING' => 'ING-Homepay',
-    'KBC' => 'KBC/CBC',
+    'KBC' => 'KBC',
     'BELFIUS' => 'Belfius',
+    'SANTANDER' => 'Santander Betaalplan',
+    'ALIPAY' => 'Alipay',
+    'TRUSTLY' => 'Trustly',
+    'TRUSTPAY' => 'TrustPay',
+    'EPS' => 'EPS',
+    'IDEALQR' => 'iDEAL QR',
+    'AFTERPAY' => 'AfterPay',
 );
 
 
