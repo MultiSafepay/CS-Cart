@@ -44,7 +44,8 @@ function smarty_block_msp_issuers($params, $content, &$smarty, &$repeat)
     $iDealIssuers = $msp->getIdealIssuers();
 
 
-    $idealselect = '<br /><select name="payment_info[issuer]" id="issuerselect" style="min-width:250px;">';
+    $idealselect = '<select name="payment_info[issuer]" class="issuerselect" id="issuerselect"><option value="">Kies uw bank</option>';
+
     if ($processor_data['processor_params']['mode'] == 'T') {
         foreach ($iDealIssuers['issuers'] as $issuer) {
             $idealselect .= '<option value="' . $issuer['code']['VALUE'] . '">' . $issuer['description']['VALUE'] . '</option>';

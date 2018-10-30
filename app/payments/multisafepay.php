@@ -430,13 +430,17 @@ if (defined('PAYMENT_NOTIFICATION')) {
 
 
 
-    if ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer'])) {
+    if ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer']) && $order_info['payment_info']['issuer'] != null) {
         $msp->extravars = $order_info['payment_info']['issuer'];
     }
 
-    if (in_array ($processor_data['processor_params']['gateway'], array ('IDEAL', 'KBC', 'INGHOME', 'ALIPAY', 'PAYPAL'))) {
+    if (in_array ($processor_data['processor_params']['gateway'], array ('KBC', 'INGHOME', 'ALIPAY', 'PAYPAL'))) {
         $url = $msp->startDirectXMLTransaction();
-    } else {
+    }elseif($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer']) && $order_info['payment_info']['issuer'] != null){
+        $url = $msp->startDirectXMLTransaction();
+    }
+
+    else{
         $url = $msp->startCheckout();
     }
     if (isset($processor_data['processor_params']['debug'])) {
