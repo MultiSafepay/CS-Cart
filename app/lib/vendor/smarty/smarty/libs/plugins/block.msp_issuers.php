@@ -25,6 +25,11 @@ function smarty_block_msp_issuers($params, $content, &$smarty, &$repeat)
     $repeat = false;
     $processor_data = fn_get_processor_data($_SESSION['cart']['payment_id']);
 
+    if(empty($processor_data) && isset($_REQUEST['order_id'])) {
+        $order_info = fn_get_order_info($_REQUEST['order_id']);
+        $processor_data = fn_get_processor_data($order_info['payment_id']);
+    }
+
     require_once (DIR_ROOT . '/app/payments/MultiSafepay.combined.php');
 
 
