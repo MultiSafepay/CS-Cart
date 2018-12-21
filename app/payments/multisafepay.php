@@ -218,7 +218,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
     if (is_array($itemlist)) {
         $cart_items = "<ul>\n";
         foreach ($itemlist as $product) {
-            $product_price = fn_format_price_by_currency($product['price'], CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY);
+            $product_price = fn_format_price_by_currency_multisafepay($product['price'], CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY);
             $cart_items .= "<li>" . $product['amount'] . " x : " . $product['product'] . " : " . $product_price . "</li>\n";
         }
         $cart_items .= "</ul>\n";
@@ -337,7 +337,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
             }
         }
 
-        $c_item = new MspItem($item['product'], '', $item['amount'], fn_format_price_by_currency($product_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
+        $c_item = new MspItem($item['product'], '', $item['amount'], fn_format_price_by_currency_multisafepay($product_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
         $c_item->SetMerchantItemId($item['product_code']);
         $c_item->SetTaxTableSelector($taxid);
         $msp->cart->AddItem($c_item);
@@ -368,7 +368,8 @@ if (defined('PAYMENT_NOTIFICATION')) {
             }
         }
 
-        $c_item = new MspItem($shipping['shipping'], __('Shipping'), 1, fn_format_price_by_currency($shipping_cost, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
+
+        $c_item = new MspItem($shipping['shipping'], __('Shipping'), 1, fn_format_price_by_currency_multisafepay($shipping_cost, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
         $c_item->SetMerchantItemId('msp-shipping');
         $c_item->SetTaxTableSelector($taxid);
         $msp->cart->AddItem($c_item);
@@ -398,7 +399,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
         }
 
         $surcharge_title = $order_info['payment_method']['surcharge_title'] ?: __('payment_surcharge');
-        $c_item = new MspItem($surcharge_title,'Surcharge',  1, fn_format_price_by_currency($total_surcharge, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
+        $c_item = new MspItem($surcharge_title,'Surcharge',  1, fn_format_price_by_currency_multisafepay($total_surcharge, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
         $c_item->SetMerchantItemId('Surcharge');
         $c_item->SetTaxTableSelector($taxid);
         $msp->cart->AddItem($c_item);
@@ -409,7 +410,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
         foreach ($order_info['promotions'] as $key => $value) {
             if ($order_info['subtotal_discount'] != '0.00') {
                 $discount_price = $order_info['subtotal_discount'];
-                $c_item = new MspItem($value['name'], 'Discount Price', 1, ('-' . fn_format_price_by_currency($discount_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY)));
+                $c_item = new MspItem($value['name'], 'Discount Price', 1, ('-' . fn_format_price_by_currency_multisafepay($discount_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY)));
                 $c_item->SetTaxTableSelector('no-tax');
                 $msp->cart->AddItem($c_item);
             }
@@ -479,6 +480,22 @@ function parseFeed()
 function getGateway($gateway_code)
 {
     return ($gateway_code == "WALLET") ? "" : $gateway_code;
+}
+
+function fn_format_price_by_currency_multisafepay($price, $currency_from = CART_PRIMARY_CURRENCY, $currency_to = CART_SECONDARY_CURRENCY)
+{
+    //Get currencies
+    $currencies = Registry::get('currencies');
+    $currency_from = !empty($currencies[$currency_from]) ? $currencies[$currency_from] : $currencies[CART_PRIMARY_CURRENCY];
+    $currency_to = !empty($currencies[$currency_to]) ? $currencies[$currency_to] : $currencies[CART_SECONDARY_CURRENCY];
+
+    //Calculate price WITH decimals
+    $result = fn_format_price($price / ($currency_to['coefficient'] / $currency_from['coefficient']), $currency_to['currency_code'], 10);
+
+    //Update
+    fn_set_hook('format_price_by_currency_post', $price, $currency_from, $currency_to, $result);
+
+    return $result;
 }
 
 ?>
