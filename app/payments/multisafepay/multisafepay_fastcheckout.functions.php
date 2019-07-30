@@ -91,7 +91,7 @@ function fn_multisafepay_set_fastcheckout($payment_id, $order_id = 0, $order_inf
     $msp->version = '1.3.0';
 
     $msp->plugin['shop'] = 'CS-Cart';
-    $msp->plugin['shop_version'] = '4';
+    $msp->plugin['shop_version'] = PRODUCT_VERSION;
     $msp->plugin['plugin_version'] = '1.3.0';
     $msp->plugin['partner'] = '';
     $msp->plugin['shop_root_url'] = Registry::get('config.current_location');
