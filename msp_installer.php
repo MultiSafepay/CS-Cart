@@ -34,7 +34,7 @@ require_once(dirname(__FILE__) . '/config.php');
 $payments = array(
     "BANKTRANS" => "Bank transfer",
     "DIRDEB" => "Direct Debit",
-    "DIRECTBANK" => "Direct Ebanking",
+    "DIRECTBANK" => "SOFORT Banking",
     "GIROPAY" => "Giropay",
     "IDEAL" => "iDEAL",
     "MAESTRO" => "Maestro",
