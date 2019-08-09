@@ -81,7 +81,6 @@ if (defined('PAYMENT_NOTIFICATION')) {
             $msp_statuses = $processor_data['processor_params']['statuses'];
 
             if ($order_info['status'] != 'P' && $order_info['status'] != 'C' || $status == "refunded" || $status == "partial_refunded") {
-
                 switch ($status) {
                     case "initialized":
                         $pp_response['order_status'] = $msp_statuses['initialized'];
@@ -136,7 +135,6 @@ if (defined('PAYMENT_NOTIFICATION')) {
                 if ($details['ewallet']['id'] != '' && $details['paymentdetails']['type'] != 'BANKTRANS') {
                     if ($status == 'initialized' || $status == 'expired') {
                         fn_change_order_status($_REQUEST['transactionid'], $pp_response['order_status'], '');
-                        //fn_order_placement_routines($_REQUEST['transactionid'], false);
                     } else {
                         fn_change_order_status($_REQUEST['transactionid'], $pp_response['order_status'], '');
                         fn_finish_payment($order_id, $pp_response);
@@ -154,7 +152,6 @@ if (defined('PAYMENT_NOTIFICATION')) {
 
 
         if ($mode == 'return') {
-
             if ($details['paymentdetails']['type'] == 'BANKTRANS') {
                 $order_info = fn_get_order_info($_REQUEST['transactionid'], true);
                 $order_id = $_REQUEST['transactionid'];
@@ -163,11 +160,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
                 $msp_statuses = $processor_data['processor_params']['statuses'];
 
                 $order_info = fn_get_order_info($_REQUEST['transactionid'], true);
-                //if ($order_info['status'] == 'N' || $order_info['status'] == $msp_statuses['initialized'] ) {
                 fn_change_order_status($_REQUEST['transactionid'], 'O', '');
-                //}
-
-
                 fn_order_placement_routines('route', $_REQUEST['transactionid']);
 
                 exit;
@@ -240,9 +233,6 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $msp->merchant['account_id'] = $processor_data['processor_params']['account'];
     $msp->merchant['site_id'] = $processor_data['processor_params']['site_id'];
     $msp->merchant['site_code'] = $processor_data['processor_params']['securitycode'];
-    //$msp->merchant['notification_url'] 	= 	Registry::get('config.current_location') . "/$index_script?dispatch=payment_notification.notify&payment=multisafepay_".strtolower($processor_data['processor_params']['gateway'])."&type=initial";
-    //$msp->merchant['cancel_url']       	= 	Registry::get('config.current_location') . "/$index_script?dispatch=payment_notification.cancel&payment=multisafepay_".strtolower($processor_data['processor_params']['gateway'])."&transactionid=".$order_id;
-    //$msp->merchant['redirect_url'] 	   	= 	Registry::get('config.current_location') . "/$index_script?dispatch=payment_notification.return&payment=multisafepay_".strtolower($processor_data['processor_params']['gateway']);
 
     $gateway_url_postfix = strtolower($processor_data['processor_params']['gateway']);
     if ($gateway_url_postfix == "mistercash") { //hotfix for bancontact/mistercash url
@@ -268,7 +258,6 @@ if (defined('PAYMENT_NOTIFICATION')) {
 
 
     $msp->merchant['close_window'] = true;
-    //$msp->customer['locale']           	= 	$processor_data['processor_params']['language'];
     $msp->customer['locale'] = isset($order_info['lang_code']) ? strtolower($order_info['lang_code']) : $processor_data['processor_params']['language'];
     $msp->customer['locale'] .= '_' . $order_info['b_country'];
 
@@ -313,56 +302,86 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $taxes['no-tax'] = 0;
 
     //Add the products
-    foreach ($order_info['products'] as $item) {
-        $product_data = fn_get_product_data($item['product_id'], $_SESSION['auth'], $order_info['lang_code'], '', true, true, true, true, false, true, true);
+    foreach ($order_info['products'] as $product_data) {
+        fn_gather_additional_products_data($product_data, [
+            'get_icon' => false,
+            'get_detailed' => true,
+            'get_options' => true,
+            'get_discounts' => false,
+            'get_additional' => true,
+            'get_features' => true,
+            'get_extra' => true,
+            'get_taxed_prices' => false
+        ]);
+
+        $product_name = getProductName($product_data);
+        $merchant_item_id = getProductCode($product_data);
 
         // Get (first) Product tax
-        if (!empty($product_data['tax_ids'])){
-            $product_tax_id = reset ($product_data['tax_ids']);
+        $product_tax = fn_get_product_data(
+            $product_data['product_id'],
+            $_SESSION['auth'],
+            $order_info['lang_code'],
+            '',
+            true,
+            true,
+            true,
+            true,
+            false,
+            true,
+            true
+        );
+        if (!empty($product_tax['tax_ids'])) {
+            $product_tax_id = reset($product_tax['tax_ids']);
         }
 
-        $product_price = $item['price'];
+        $product_price = $product_data['price'];
 
-        if (empty ($product_tax_id)) {
+        if (empty($product_tax_id)) {
             $taxid = 'no-tax';
-        }else{
-            $rate  = $order_info['taxes'][$product_tax_id]['rate_value'];
-            $taxid = $order_info['taxes'][$product_tax_id]['description'] . '-' . $rate;;
+        } else {
+            $rate = $order_info['taxes'][$product_tax_id]['rate_value'];
+            $taxid = $order_info['taxes'][$product_tax_id]['description'] . '-' . $rate;
             $taxes[$taxid] = $rate;
 
-            if ( $order_info['taxes'][$product_tax_id]['price_includes_tax'] == 'Y'){
+            if ($order_info['taxes'][$product_tax_id]['price_includes_tax'] == 'Y') {
                 $tax = ($product_price / (100 + $rate)) * $rate;
                 $product_price = $product_price - $tax;
             }
         }
 
-        $c_item = new MspItem($item['product'], '', $item['amount'], fn_format_price_by_currency_multisafepay($product_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
-        $c_item->SetMerchantItemId($item['product_code']);
+        $c_item = new MspItem(
+            $product_name,
+            '',
+            $product_data['amount'],
+            fn_format_price_by_currency_multisafepay($product_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY),
+            'KG',
+            0
+        );
+        $c_item->SetMerchantItemId($merchant_item_id);
         $c_item->SetTaxTableSelector($taxid);
         $msp->cart->AddItem($c_item);
     }
 
-
     //add shipping line item
     $shipping_cost = $order_info['shipping_cost'];
     if ($shipping_cost >0) {
-
         // Get (first) Shipping method
-        $shipping = reset ($order_info['shipping']);
+        $shipping = reset($order_info['shipping']);
 
         // Get (first) Shipping tax
         if (!empty($shipping['taxes'])) {
             $shipping_tax = reset($shipping['taxes']);
         }
 
-        if (empty ($shipping_tax)) {
+        if (empty($shipping_tax)) {
             $taxid = 'no-tax';
-        }else{
+        } else {
             $rate  = $shipping_tax['rate_value'];
             $taxid = $shipping_tax['description'] . '-' . $rate;
             $taxes[$taxid] = $rate;
 
-            if ( $shipping_tax['price_includes_tax'] == 'Y'){
+            if ($shipping_tax['price_includes_tax'] == 'Y') {
                 $shipping_cost = $shipping_cost - $shipping_tax['tax_subtotal'];
             }
         }
@@ -378,27 +397,26 @@ if (defined('PAYMENT_NOTIFICATION')) {
     //Add payment surcharge
     $total_surcharge = $order_info['payment_surcharge'];
     if ($total_surcharge >0) {
-
         // Get (first) Surcharge tax
         if (!empty($order_info['payment_method']['tax_ids'])) {
             $surcharge_tax_id = reset($order_info['payment_method']['tax_ids']);
         }
 
-        if (empty ($surcharge_tax_id)) {
+        if (empty($surcharge_tax_id)) {
             $taxid = 'no-tax';
-        }else{
+        } else {
             $rate  = $order_info['taxes'][$surcharge_tax_id]['rate_value'];
-            $taxid = $order_info['taxes'][$surcharge_tax_id]['description'] . '-' . $rate;;
+            $taxid = $order_info['taxes'][$surcharge_tax_id]['description'] . '-' . $rate;
             $taxes[$taxid] = $rate;
 
-            if ( $order_info['taxes'][$surcharge_tax_id]['price_includes_tax'] == 'Y'){
+            if ($order_info['taxes'][$surcharge_tax_id]['price_includes_tax'] == 'Y') {
                 $tax = ($total_surcharge / (100 + $rate)) * $rate;
                 $total_surcharge = $total_surcharge - $tax;
             }
         }
 
         $surcharge_title = $order_info['payment_method']['surcharge_title'] ?: __('payment_surcharge');
-        $c_item = new MspItem($surcharge_title,'Surcharge',  1, fn_format_price_by_currency_multisafepay($total_surcharge, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
+        $c_item = new MspItem($surcharge_title, 'Surcharge', 1, fn_format_price_by_currency_multisafepay($total_surcharge, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
         $c_item->SetMerchantItemId('Surcharge');
         $c_item->SetTaxTableSelector($taxid);
         $msp->cart->AddItem($c_item);
@@ -417,7 +435,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
     }
 
 
-    $taxrule = new MspDefaultTaxRule( $taxes['no-tax'], false);
+    $taxrule = new MspDefaultTaxRule($taxes['no-tax'], false);
     $msp->cart->AddDefaultTaxRules($taxrule);
 
     //add available tax rates ..
@@ -429,18 +447,15 @@ if (defined('PAYMENT_NOTIFICATION')) {
     }
 
 
-
     if ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer']) && $order_info['payment_info']['issuer'] != null) {
         $msp->extravars = $order_info['payment_info']['issuer'];
     }
 
-    if (in_array ($processor_data['processor_params']['gateway'], array ('KBC', 'INGHOME', 'ALIPAY', 'PAYPAL'))) {
+    if (in_array($processor_data['processor_params']['gateway'], array('KBC', 'INGHOME', 'ALIPAY', 'PAYPAL'))) {
         $url = $msp->startDirectXMLTransaction();
-    }elseif($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer']) && $order_info['payment_info']['issuer'] != null){
+    } elseif ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer']) && $order_info['payment_info']['issuer'] != null) {
         $url = $msp->startDirectXMLTransaction();
-    }
-
-    else{
+    } else {
         $url = $msp->startCheckout();
     }
     if (isset($processor_data['processor_params']['debug'])) {
@@ -497,4 +512,41 @@ function fn_format_price_by_currency_multisafepay($price, $currency_from = CART_
     return $result;
 }
 
-?>
+/**
+ * @param array $product_data
+ * @return string
+ */
+function getProductName($product_data = [])
+{
+    $product_name = $product_data['product'];
+    if (!isset($product_data['extra']['product_options_value'])) {
+        return $product_name;
+    }
+    $add_to_product_name = [];
+    foreach ($product_data['extra']['product_options_value'] as $option) {
+        $add_to_product_name[] = $option['option_name'] . ':' . $option['variant_name'];
+    }
+    $product_name .= ' (' . implode(", ", $add_to_product_name) . ')';
+
+    return $product_name;
+}
+
+/**
+ * @param array $product_data
+ * @return string
+ */
+function getProductCode($product_data = [])
+{
+    $product_code = $product_data['product_code'];
+    if (!isset($product_data['extra']['product_options_value'])) {
+        return $product_code;
+    }
+
+    $add_to_merchant_item_id = [];
+    foreach ($product_data['extra']['product_options_value'] as $option) {
+        $add_to_merchant_item_id[] = $option['option_id'] . ':' . $option['value'];
+    }
+    $product_code .= '-' . implode("-", $add_to_merchant_item_id);
+
+    return $product_code;
+}
