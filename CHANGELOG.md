@@ -1,3 +1,19 @@
+##  1.4.0
+Release date - January 15th, 2019
+
+### Added
++ PLGCSCS-88: Add "Kies uw Bank" as first issuer option
+
+### Changed
++ PLGCSCS-100: Make merchant_item_id unique for product options
++ PLGCSCS-94: Rename Direct Ebanking to SOFORT Banking
++ PLGCSCS-92: Correct payment methods names
++ PLGCSCS-91: Change the number of decimals from 2 to 10 on all shopping cart items in transaction requests
+
+### Fixed
++ PLGCSCS-93: Fix shop version number in transaction request
++ PLGCSCS-83: Fix iDEAL issuer list not showing when user tries to place an order
+
 # Release Notes - CS-Cart4 1.3.0 (Aug 24, 2018) #
 
 ## Added ##
