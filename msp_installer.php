@@ -32,34 +32,34 @@ define('DIR_ROOT', dirname(__FILE__));
 require_once(dirname(__FILE__) . '/config.php');
 
 $payments = array(
-    'BANKTRANS' => 'Bank Transfer',
-    'DIRDEB' => 'Direct Debit',
-    'DIRECTBANK' => 'Direct Ebanking',
-    'GIROPAY' => 'GiroPay',
-    'IDEAL' => 'iDeal',
-    'MAESTRO' => 'Maestro',
-    'MASTERCARD' => 'Mastercard',
-    'BANCONTACT' => 'Bancontact',
-    'WALLET' => 'Multisafepay Wallet',
-    'VISA' => 'Visa',
-    'PAYPAL' => 'PayPal',
-    'FERBUY' => 'Ferbuy',
-    'DOTPAY' => 'Dotpay',
-    'PAYSAFECARD' => 'Paysafecard',
-    'PAYAFTER' => 'Betaal na Ontvangst',
-    'EINVOICE' => 'Einvoice',
-    'KLARNA' => 'Klarna Invoice',
-    'AMEX' => 'American Express',
-    'ING' => 'ING-Homepay',
-    'KBC' => 'KBC',
-    'BELFIUS' => 'Belfius',
-    'SANTANDER' => 'Santander Betaalplan',
-    'ALIPAY' => 'Alipay',
-    'TRUSTLY' => 'Trustly',
-    'TRUSTPAY' => 'TrustPay',
-    'EPS' => 'EPS',
-    'IDEALQR' => 'iDEAL QR',
-    'AFTERPAY' => 'AfterPay',
+    "BANKTRANS" => "Bank transfer",
+    "DIRDEB" => "Direct Debit",
+    "DIRECTBANK" => "SOFORT Banking",
+    "GIROPAY" => "Giropay",
+    "IDEAL" => "iDEAL",
+    "MAESTRO" => "Maestro",
+    "MASTERCARD" => "Mastercard",
+    "BANCONTACT" => "Bancontact",
+    "WALLET" => "Multisafepay Wallet",
+    "VISA" => "Visa",
+    "PAYPAL" => "PayPal",
+    "FERBUY" => "Ferbuy",
+    "DOTPAY" => "Dotpay",
+    "PAYSAFECARD" => "Paysafecard",
+    "PAYAFTER" => "Pay After Delivery",
+    "EINVOICE" => "E-Invoicing",
+    "KLARNA" => "Klarna",
+    "AMEX" => "American Express",
+    "ING" => "ING Home''Pay",
+    "KBC" => "KBC",
+    "BELFIUS" => "Belfius",
+    "SANTANDER" => "Betaalplan",
+    "ALIPAY" => "Alipay",
+    "TRUSTLY" => "Trustly",
+    "TRUSTPAY" => "TrustPay",
+    "EPS" => "EPS",
+    "IDEALQR" => "iDEAL QR",
+    "AFTERPAY" => "AfterPay",
 );
 
 
@@ -99,7 +99,6 @@ function upd($naam, $query, $config)
         printf("Connect failed: %s\n", $mysqli->connect_error);
         exit();
     }
-
     $q = $mysqli->query("SELECT * FROM `" . $config['table_prefix'] . "payment_processors` WHERE `processor` = 'MultiSafepay " . $naam . "'");
 
     if (!$q || ($n = mysqli_num_rows($q)) == 0) {
