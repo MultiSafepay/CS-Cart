@@ -1,5 +1,5 @@
 ##  1.4.0
-Release date - January 15th, 2019
+Release date - February 26th, 2020
 
 ### Added
 + PLGCSCS-88: Add "Kies uw Bank" as first issuer option
