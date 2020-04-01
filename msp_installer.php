@@ -31,6 +31,19 @@ define('DIR_ROOT', dirname(__FILE__));
 
 require_once(dirname(__FILE__) . '/config.php');
 
+/**
+ * If this is an update of the plugin,
+ * we first have to rename some deprecated payment names.
+*/
+
+const PAYMENTS_TO_RENAME = [
+    'Multisafepay Wallet' => 'MultiSafepay',
+];
+
+foreach (PAYMENTS_TO_RENAME as $oldName => $newName) {
+    renamePaymentNames($oldName, $newName, $config);
+}
+
 $payments = array(
     "BANKTRANS" => "Bank transfer",
     "DIRDEB" => "Direct Debit",
@@ -40,7 +53,7 @@ $payments = array(
     "MAESTRO" => "Maestro",
     "MASTERCARD" => "Mastercard",
     "BANCONTACT" => "Bancontact",
-    "WALLET" => "Multisafepay Wallet",
+    "WALLET" => "MultiSafepay",
     "VISA" => "Visa",
     "PAYPAL" => "PayPal",
     "FERBUY" => "Ferbuy",
@@ -60,12 +73,14 @@ $payments = array(
     "EPS" => "EPS",
     "IDEALQR" => "iDEAL QR",
     "AFTERPAY" => "AfterPay",
+    "APPLEPAY" => "Apple Pay",
 );
 
 
 foreach ($payments as $paymentcode => $naam) {
     upd($naam, "`" . $config['table_prefix'] . "payment_processors` SET `processor` = 'MultiSafepay " . $naam . "', `processor_script` = 'multisafepay_" . strtolower($paymentcode) . ".php', `admin_template` = 'msp_" . strtolower($paymentcode) . ".tpl', `processor_template` = 'views/orders/components/payments/msp_" . strtolower($paymentcode) . ".tpl', `callback` = 'Y', `type` = 'P'", $config);
 }
+
 
 $html = '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="nl-nl" lang="nl-nl">';
 $html .= '<head>';
@@ -111,4 +126,19 @@ function upd($naam, $query, $config)
     }
 }
 
-?>
+
+function renamePaymentNames($oldName, $newName, $config)
+{
+    $mysqli = new mysqli($config['db_host'], $config['db_user'], $config['db_password'], $config['db_name']);
+
+    if ($mysqli->connect_errno) {
+        printf("Connect failed: %s\n", $mysqli->connect_error);
+        exit();
+    }
+
+    $query = 'UPDATE ' . $config['table_prefix'] . 'payment_processors' .
+        " SET processor = 'MultiSafepay " . $newName . "' " .
+                           " WHERE processor = 'MultiSafepay " . $oldName . "'";
+
+    $mysqli->query($query);
+}
