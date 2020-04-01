@@ -73,6 +73,7 @@ $payments = array(
     "EPS" => "EPS",
     "IDEALQR" => "iDEAL QR",
     "AFTERPAY" => "AfterPay",
+    "APPLEPAY" => "Apple Pay",
 );
 
 
