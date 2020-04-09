@@ -1039,6 +1039,11 @@ class MultiSafepay
       <id>' . $this->xmlEscape($this->transaction['id']) . '</id>
       <invoiceid>' . $this->xmlEscape($this->transaction['invoice_id']) . '</invoiceid>
       <shipdate>' . $this->xmlEscape($this->transaction['shipdate']) . '</shipdate>
+      <status>' . $this->xmlEscape($this->transaction['status']) . '</status>
+      <tracktracecode>' . $this->xmlEscape($this->transaction['tracktracecode']) . '</tracktracecode>
+      <reason>' . $this->xmlEscape($this->transaction['reason']) . '</reason>
+      <carrier>' . $this->xmlEscape($this->transaction['carrier']) . '</carrier>
+      <shipdate>' . $this->xmlEscape($this->transaction['shipdate']) . '</shipdate>
     </transaction>
     </updatetransaction>';
 
