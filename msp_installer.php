@@ -74,6 +74,8 @@ $payments = array(
     "IDEALQR" => "iDEAL QR",
     "AFTERPAY" => "AfterPay",
     "APPLEPAY" => "Apple Pay",
+    "DBRTP" => "Direct Bank Transfer",
+
 );
 
 
