@@ -451,7 +451,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
         $msp->extravars = $order_info['payment_info']['issuer'];
     }
 
-    if (in_array($processor_data['processor_params']['gateway'], array('KBC', 'INGHOME', 'ALIPAY', 'PAYPAL'))) {
+    if (in_array($processor_data['processor_params']['gateway'], array('CBC', 'KBC', 'INGHOME', 'ALIPAY', 'PAYPAL'))) {
         $url = $msp->startDirectXMLTransaction();
     } elseif ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer']) && $order_info['payment_info']['issuer'] != null) {
         $url = $msp->startDirectXMLTransaction();

@@ -75,6 +75,7 @@ $payments = array(
     "AFTERPAY" => "AfterPay",
     "APPLEPAY" => "Apple Pay",
     "DBRTP" => "Direct Bank Transfer",
+    "CBC" => "CBC",
 
 );
 
