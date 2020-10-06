@@ -365,33 +365,30 @@ if (defined('PAYMENT_NOTIFICATION')) {
 
     //add shipping line item
     $shipping_cost = $order_info['shipping_cost'];
-    if ($shipping_cost >0) {
-        // Get (first) Shipping method
-        $shipping = reset($order_info['shipping']);
+    // Get (first) Shipping method
+    $shipping = reset($order_info['shipping']);
 
-        // Get (first) Shipping tax
-        if (!empty($shipping['taxes'])) {
-            $shipping_tax = reset($shipping['taxes']);
-        }
-
-        if (empty($shipping_tax)) {
-            $taxid = 'no-tax';
-        } else {
-            $rate  = $shipping_tax['rate_value'];
-            $taxid = $shipping_tax['description'] . '-' . $rate;
-            $taxes[$taxid] = $rate;
-
-            if ($shipping_tax['price_includes_tax'] == 'Y') {
-                $shipping_cost = $shipping_cost - $shipping_tax['tax_subtotal'];
-            }
-        }
-
-
-        $c_item = new MspItem($shipping['shipping'], __('Shipping'), 1, fn_format_price_by_currency_multisafepay($shipping_cost, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
-        $c_item->SetMerchantItemId('msp-shipping');
-        $c_item->SetTaxTableSelector($taxid);
-        $msp->cart->AddItem($c_item);
+    // Get (first) Shipping tax
+    if (!empty($shipping['taxes'])) {
+        $shipping_tax = reset($shipping['taxes']);
     }
+
+    if (empty($shipping_tax)) {
+        $taxid = 'no-tax';
+    } else {
+        $rate  = $shipping_tax['rate_value'];
+        $taxid = $shipping_tax['description'] . '-' . $rate;
+        $taxes[$taxid] = $rate;
+
+        if ($shipping_tax['price_includes_tax'] == 'Y') {
+            $shipping_cost = $shipping_cost - $shipping_tax['tax_subtotal'];
+        }
+    }
+
+    $c_item = new MspItem($shipping['shipping'], __('Shipping'), 1, fn_format_price_by_currency_multisafepay($shipping_cost, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY), 'KG', 0);
+    $c_item->SetMerchantItemId('msp-shipping');
+    $c_item->SetTaxTableSelector($taxid);
+    $msp->cart->AddItem($c_item);
 
 
     //Add payment surcharge
@@ -422,18 +419,14 @@ if (defined('PAYMENT_NOTIFICATION')) {
         $msp->cart->AddItem($c_item);
     }
 
-
     if (isset($order_info['promotions'])) {
-        foreach ($order_info['promotions'] as $key => $value) {
-            if ($order_info['subtotal_discount'] != '0.00') {
-                $discount_price = $order_info['subtotal_discount'];
-                $c_item = new MspItem($value['name'], 'Discount Price', 1, ('-' . fn_format_price_by_currency_multisafepay($discount_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY)));
-                $c_item->SetTaxTableSelector('no-tax');
-                $msp->cart->AddItem($c_item);
-            }
+        if ($order_info['subtotal_discount'] != '0.00') {
+            $discount_price = $order_info['subtotal_discount'];
+            $c_item = new MspItem('Order discount', 'Amount', 1, ('-' . fn_format_price_by_currency_multisafepay($discount_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY)));
+            $c_item->SetTaxTableSelector('no-tax');
+            $msp->cart->AddItem($c_item);
         }
     }
-
 
     $taxrule = new MspDefaultTaxRule($taxes['no-tax'], false);
     $msp->cart->AddDefaultTaxRules($taxrule);
