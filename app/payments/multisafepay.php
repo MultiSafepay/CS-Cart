@@ -272,7 +272,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $msp->customer['country'] = $order_info['b_country'];
     $msp->customer['ipaddress'] = $ip['host'];
     $msp->customer['forwardedip'] = $ip['proxy'];
-    $msp->parseCustomerAddress($order_info['b_address']);
+    $msp->parseCustomerAddress($order_info['b_address'] . ' ' . $order_info['b_address_2']);
 
     $msp->delivery['firstname'] = $order_info['s_firstname'];
     $msp->delivery['lastname'] = $order_info['s_lastname'];
@@ -281,7 +281,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $msp->delivery['state'] = $order_info['s_state'];
     $msp->delivery['phone'] = $order_info['s_phone'];
     $msp->delivery['country'] = $order_info['s_country'];
-    $msp->parseDeliveryAddress($order_info['s_address']);
+    $msp->parseDeliveryAddress($order_info['s_address'] . ' ' . $order_info['s_address_2']);
 
     $msp->transaction['id'] = $order_id;
     $msp->transaction['currency'] = ($order_info['secondary_currency'] ? $order_info['secondary_currency'] : $processor_data['processor_params']['currency']);
