@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<addon scheme='3.0'>
+    <id>multisafepay</id>
+    <version>1.0</version>
+    <name>MultiSafepay</name>
+    <description>MultiSafepay</description>
+    <priority>100500</priority>
+    <status>active</status>
+    <auto_install>PROFESSIONAL,MULTIVENDOR,ULTIMATE</auto_install>
+</addon>

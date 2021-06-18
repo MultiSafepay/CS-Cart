@@ -1,5 +1,4 @@
 <?php
-
 /**
  *
  * DISCLAIMER
@@ -8,10 +7,10 @@
  * to newer versions in the future. If you wish to customize the plugin for your
  * needs please document your changes and make backups before you update.
  *
- * @category MultiSafepay
- * @package Connect
- * @author TechSupport <techsupport@multisafepay.com>
- * @copyright Copyright (c) 2018 MultiSafepay, Inc. (https://www.multisafepay.com)
+ * @category    MultiSafepay
+ * @package     Connect
+ * @author      MultiSafepay <integration@multisafepay.com>
+ * @copyright   Copyright (c) MultiSafepay, Inc. (https://www.multisafepay.com)
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
@@ -20,6 +19,7 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 define('BOOTSTRAP', '');
 if (function_exists('date_default_timezone_set')) {
     date_default_timezone_set('Europe/Amsterdam');
@@ -34,10 +34,11 @@ require_once(dirname(__FILE__) . '/config.php');
 /**
  * If this is an update of the plugin,
  * we first have to rename some deprecated payment names.
-*/
+ */
 
 const PAYMENTS_TO_RENAME = [
     'Multisafepay Wallet' => 'MultiSafepay',
+    'Betaalplan' => 'Santander Consumer Finance Pay per Month',
 ];
 
 foreach (PAYMENTS_TO_RENAME as $oldName => $newName) {
@@ -66,7 +67,7 @@ $payments = array(
     "ING" => "ING Home''Pay",
     "KBC" => "KBC",
     "BELFIUS" => "Belfius",
-    "SANTANDER" => "Betaalplan",
+    "SANTANDER" => "Santander Consumer Finance Pay per Month",
     "ALIPAY" => "Alipay",
     "TRUSTLY" => "Trustly",
     "TRUSTPAY" => "TrustPay",
@@ -74,6 +75,8 @@ $payments = array(
     "IDEALQR" => "iDEAL QR",
     "AFTERPAY" => "AfterPay",
     "APPLEPAY" => "Apple Pay",
+    "DBRTP" => "Request to Pay",
+    "CBC" => "CBC",
 );
 
 
@@ -86,7 +89,7 @@ $html = '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="nl-nl" lang="nl-nl
 $html .= '<head>';
 $html .= '<meta charset="utf-8">';
 $html .= '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">';
-$html .= '<meta name="copyright" content="2012 MultiSafepay" />';
+$html .= '<meta name="copyright" content="2020 MultiSafepay" />';
 $html .= '<meta name="title" content="CS-Cart Gateway Installation | MultiSafepay" />';
 $html .= '</head>';
 $html .= '<body style="width:560px;height:100%;margin:0px auto;margin-top:40px;background:#252525">';
@@ -138,7 +141,7 @@ function renamePaymentNames($oldName, $newName, $config)
 
     $query = 'UPDATE ' . $config['table_prefix'] . 'payment_processors' .
         " SET processor = 'MultiSafepay " . $newName . "' " .
-                           " WHERE processor = 'MultiSafepay " . $oldName . "'";
+        " WHERE processor = 'MultiSafepay " . $oldName . "'";
 
     $mysqli->query($query);
 }
