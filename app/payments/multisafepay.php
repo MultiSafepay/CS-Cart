@@ -423,6 +423,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
         if ($order_info['subtotal_discount'] != '0.00') {
             $discount_price = $order_info['subtotal_discount'];
             $c_item = new MspItem('Order discount', 'Amount', 1, ('-' . fn_format_price_by_currency_multisafepay($discount_price, CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY)));
+            $c_item->SetMerchantItemId('discount');
             $c_item->SetTaxTableSelector('no-tax');
             $msp->cart->AddItem($c_item);
         }
