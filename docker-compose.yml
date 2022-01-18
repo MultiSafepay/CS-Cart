@@ -1,0 +1,36 @@
+version: '3.3'
+
+services:
+  app:
+    depends_on:
+      - db
+      - mail
+    build: .
+    sysctls:
+      - net.ipv4.ip_unprivileged_port_start=0
+    volumes:
+      - ./:/var/www/html/.modman/multisafepay
+      - ./msp_installer.php:/var/www/html/msp_installer.php
+      - ./cscart:/var/www/html/
+    environment:
+      PHP_IDE_CONFIG: "serverName=app"
+  db:
+    image: 'mysql:5.7'
+    command: --default-authentication-plugin=mysql_native_password
+    #    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  mail:
+    image: 'mailhog/mailhog'
+    ports:
+      - 8025:8025
+  expose:
+    depends_on:
+      - app
+    build: https://github.com/beyondcode/expose.git
+    entrypoint: ["/bin/sh", "-c" , "/src/expose token ${EXPOSE_TOKEN} && sed -i -E \"s/'dns'\\s?=>\\s?'.*'/'dns' => true/g\" /root/.expose/config.php  && /src/expose share app --server-host=${EXPOSE_HOST} --subdomain=${APP_SUBDOMAIN}"]
+    ports:
+      - 4040:4040
