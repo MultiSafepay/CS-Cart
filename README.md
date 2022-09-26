@@ -4,28 +4,37 @@
 
 # MultiSafepay plugin for CS-Cart
 
-Easily integrate MultiSafepay payment solutions into your CS-Cart webshop with the free and completely new MultiSafepay CS-Cart plugin.
+Easily integrate MultiSafepay payment solutions into your CS-Cart webshop with our free plugin.
 
-[![Latest Stable Version](https://img.shields.io/github/release/multisafepay/cs-cart.svg)](https://github.com/MultiSafepay/CS-Cart)
+[![Latest stable version](https://img.shields.io/github/release/multisafepay/cs-cart.svg)](https://github.com/MultiSafepay/CS-Cart)
 
-## About MultiSafepay ##
-MultiSafepay is a collecting payment service provider which means we take care of the agreements, technical details and payment collection required for each payment method. You can start selling online today and manage all your transactions from one place.
-## Supported Payment Methods ##
-The supported Payment Methods & Gift cards for this plugin can be found over here: [Payment Methods & Gift cards](https://docs.multisafepay.com/plugins/cs-cart/faq/#available-payment-methods-in-cs-cart)
+## About MultiSafepay 
 
-## Requirements
-- To use the plugin you need a MultiSafepay account. You can create a test account on https://testmerchant.multisafepay.com/signup
+MultiSafepay is a collecting payment service provider, which means we take care of electronic contracts, technical details, and payment collection for each payment method. You can start selling online today and manage all your transactions in one place.
+
+## Supported payment methods
+
+See MultiSafepay Docs – [CS-Cart](https://docs.multisafepay.com/docs/cs-cart).
+
+## Prerequisites
+
+- You will need a [MultiSafepay account](https://testmerchant.multisafepay.com/signup). Consider a test account first.
 - CS-Cart 4.x
 
-## Installation through SFTP
-1. Unpack the content of the .ZIP file in the root of your webshop
-2. Go to yourdomain.com/msp_installer.php. This will trigger the installation
-3. Delete the msp_installer.php file
+## Installation via SFTP
 
-For additional information or instructions please see our [installation & configuration manual](https://docs.multisafepay.com/plugins/cs-cart/manual/)
+1. Unpack the content of the .ZIP file in the root of your webshop.
+2. To trigger the installation, go to `yourdomain.com/msp_installer.php`. 
+3. Delete the `msp_installer.php` file.
+4. In your [MultiSafepay account](https://merchant.multisafepay.com/), provide your [webhook endpoint](https://docs.multisafepay.com/docs/configure-your-webhook/).
+
+For more information and configuration instructions, see MultiSafepay Docs – [CS-Cart](https://docs.multisafepay.com/docs/cs-cart).
 
 ## Support
-You can create issues on our repository. If you need any additional help or support, please contact <a href="mailto:integration@multisafepay.com">integration@multisafepay.com</a>
+
+- Create an issue on this repository. 
+- Email <a href="mailto:integration@multisafepay.com">integration@multisafepay.com</a>
 
 ## Want to be part of the team?
-Are you a developer interested in working at MultiSafepay? [View](https://www.multisafepay.com/careers/#jobopenings) our job openings and feel free to get in touch with us.
+
+Are you a developer interested in working at MultiSafepay? Check out our [job openings](https://www.multisafepay.com/careers/#jobopenings) and feel free to get in touch!
