@@ -380,8 +380,12 @@ if (defined('PAYMENT_NOTIFICATION')) {
         $taxid = $shipping_tax['description'] . '-' . $rate;
         $taxes[$taxid] = $rate;
 
-        if ($shipping_tax['price_includes_tax'] == 'Y') {
-            $shipping_cost = $shipping_cost - $shipping_tax['tax_subtotal'];
+        if ((string)$shipping_tax['price_includes_tax'] === 'Y') {
+            $shipping_cost -= $shipping_tax['tax_subtotal'];
+        }
+
+        if ((string)$shipping_tax['price_includes_tax'] === 'N') {
+            $shipping_cost = (float)$shipping['rate'];
         }
     }
 
