@@ -10,7 +10,7 @@ RUN debconf-set-selections << "postfix postfix/main_mailer_type string 'Internet
 RUN apt-get install --assume-yes postfix
 RUN sed -i -E "s/( *relayhost *= *).*/\1[mail]:1025/g" /etc/postfix/main.cf
 
-RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN pecl install xdebug-3.1.0 && docker-php-ext-enable xdebug
 RUN { \
         echo 'xdebug.mode=debug'; \
         echo 'xdebug.start_with_request=trigger'; \
