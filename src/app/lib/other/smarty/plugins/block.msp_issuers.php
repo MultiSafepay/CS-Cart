@@ -32,8 +32,6 @@ function smarty_block_msp_issuers($params, $content, &$smarty, &$repeat)
 
     require_once (DIR_ROOT . '/app/payments/MultiSafepay.combined.php');
 
-
-
     if ($processor_data['processor_params']['mode'] == 'T') {
         $test = true;
     } else {
@@ -48,21 +46,23 @@ function smarty_block_msp_issuers($params, $content, &$smarty, &$repeat)
 
     $iDealIssuers = $msp->getIdealIssuers();
 
+    $idealselect = '<div class="litecheckout__field cm-field-container litecheckout__field--small litecheckout__field--state">';
+    $idealselect .= '<select name="payment_info[issuer]" class="issuerselect litecheckout__input litecheckout__input--selectable litecheckout__input--selectable--select" id="issuerselect">';
 
-    $idealselect = '<select name="payment_info[issuer]" class="issuerselect" id="issuerselect"><option value="">Kies uw bank</option>';
+    if (!empty($iDealIssuers['issuers']['issuer'])) {
+        $idealselect .= '<option value="">Kies uw bank</option>';
 
-    if ($processor_data['processor_params']['mode'] == 'T') {
-        foreach ($iDealIssuers['issuers'] as $issuer) {
-            $idealselect .= '<option value="' . $issuer['code']['VALUE'] . '">' . $issuer['description']['VALUE'] . '</option>';
-        }
-    } else {
         foreach ($iDealIssuers['issuers']['issuer'] as $issuer) {
-            $idealselect .= '<option value="' . $issuer['code']['VALUE'] . '">' . $issuer['description']['VALUE'] . '</option>';
+            if (!empty($issuer['code']['VALUE']) && !empty($issuer['description']['VALUE'])) {
+                $idealselect .= '<option value="' . $issuer['code']['VALUE'] . '">' . $issuer['description']['VALUE'] . '</option>';
+            }
         }
     }
-    $idealselect .= '</select>';
-
-
+    else {
+        // There are no banks available
+        $idealselect .= '<option value="">Er zijn geen banken beschikbaar</option>';
+    }
+    $idealselect .= '</select></div>';
 
     return $idealselect;
 }
