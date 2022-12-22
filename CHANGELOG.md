@@ -1,3 +1,13 @@
+## 1.6.1
+Release date - Dec 22nd, 2022
+
+### Fixed
++ PLGCSCS-140: Fix the options within the select field for Ideal issuers
++ PLGCSCS-136: Fix miscalculations of the shipping item when this one is not including taxes
++ PLGCSCS-128: Fix missing merchant_item_id on discounts
+
+***
+
 ## 1.6.0
 Release date - Jun 18th, 2021
 
