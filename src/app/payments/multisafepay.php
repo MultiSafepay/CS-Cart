@@ -286,7 +286,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $msp->transaction['id'] = $order_id;
     $msp->transaction['currency'] = ($order_info['secondary_currency'] ? $order_info['secondary_currency'] : $processor_data['processor_params']['currency']);
     $msp->cart->currency = $msp->transaction['currency'];
-    $msp->transaction['amount'] = fn_format_price_by_currency($order_info['total'], CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY) * 100;
+    $msp->transaction['amount'] = fn_format_price_by_currency_multisafepay($order_info['total'], CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY) * 100;
     $msp->transaction['description'] = 'Order #' . $msp->transaction['id'];
     $msp->transaction['items'] = $cart_items;
     $msp->transaction['gateway'] = getGateway($processor_data['processor_params']['gateway']);
@@ -452,6 +452,9 @@ if (defined('PAYMENT_NOTIFICATION')) {
     if (in_array($processor_data['processor_params']['gateway'], array('CBC', 'KBC', 'INGHOME', 'ALIPAY', 'PAYPAL'))) {
         $url = $msp->startDirectXMLTransaction();
     } elseif ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer']) && $order_info['payment_info']['issuer'] != null) {
+        if (empty($msp->gatewayinfo['issuer'])) {
+            $msp->gatewayinfo['issuer'] = $order_info['payment_info']['issuer'];
+        }
         $url = $msp->startDirectXMLTransaction();
     } else {
         $url = $msp->startCheckout();
