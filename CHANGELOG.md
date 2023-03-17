@@ -1,3 +1,11 @@
+## 1.6.2
+Release date - Mar 17th, 2023
+
+### Changed
++ PLGCSCS-141: Switch method to format the price by currency, over the order total, within the order request
+
+***
+
 ## 1.6.1
 Release date - Dec 22nd, 2022
 

@@ -291,7 +291,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $msp->transaction['items'] = $cart_items;
     $msp->transaction['gateway'] = getGateway($processor_data['processor_params']['gateway']);
     $msp->plugin_name = 'CS-Cart 4.x';
-    $msp->version = '1.6.1';
+    $msp->version = '1.6.2';
     $msp->plugin['shop'] = 'CS-Cart';
     $msp->plugin['shop_version'] = PRODUCT_VERSION;
     $msp->plugin['plugin_version'] = '1.6.1';
