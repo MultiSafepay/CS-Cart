@@ -14,7 +14,7 @@ jobs:
           php-version: '7.2'
       - name: Get the version
         id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//} # Extract the version number from the tag
+        run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV # Extract the version number from the tag
       - name: Checkout code
         uses: actions/checkout@v2 # Checkout the code
       - name: Build project
