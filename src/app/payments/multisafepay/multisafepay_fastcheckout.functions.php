@@ -37,9 +37,7 @@ function fn_multisafepay_set_fastcheckout($payment_id, $order_id = 0, $order_inf
     $auth['tax_exempt'] = '0';
     $cart['payment_id'] = $payment_id;
 
-
-    $result = fn_place_order($cart, $auth, $action = '', $issuer_id = null, $parent_order_id = 0);
-
+    $result = fn_place_order($cart, $auth);
 
     $processor_data = fn_get_payment_method_data($payment_id);
     $taxes = array();
@@ -84,7 +82,7 @@ function fn_multisafepay_set_fastcheckout($payment_id, $order_id = 0, $order_inf
     $msp->customer['forwardedip'] = $ip['proxy'];
 
     $msp->transaction['currency'] = (isset($order_info['secondary_currency']) ? $order_info['secondary_currency'] : $processor_data['processor_params']['currency']);
-    $msp->transaction['amount'] = $order_info['total'] * 100;
+    $msp->transaction['amount'] = (int) round($order_info['total'] * 100, 2);
     $msp->transaction['description'] = 'Order #' . $msp->transaction['id'];
     $msp->transaction['items'] = $cart_items;
     $msp->plugin_name = 'CS-Cart 4.x';

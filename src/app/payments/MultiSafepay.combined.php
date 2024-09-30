@@ -107,7 +107,6 @@ class MultiSafepay
         'phone' => '',
         'email' => '',
         'gender' => '',
-        'issuer' => ''
     );
     var $plugin = array(
         'shop' => '',
@@ -213,30 +212,6 @@ class MultiSafepay
         $this->merchant['account_id'] = trim($this->merchant['account_id']);
         $this->merchant['site_id'] = trim($this->merchant['site_id']);
         $this->merchant['site_code'] = trim($this->merchant['site_code']);
-    }
-
-    public function getIdealIssuers()
-    {
-        $this->request_xml = $this->createIdealIssuersRequest();
-        $this->api_url = $this->getApiUrl();
-        $this->reply_xml = $this->xmlPost($this->api_url, $this->request_xml);
-        $issuers = $this->parseXmlResponse($this->reply_xml);
-
-
-        return $issuers;
-    }
-
-    function createIdealIssuersRequest()
-    {
-        $request = '<?xml version="1.0" encoding="UTF-8"?>
-		<idealissuers ua="iDeal Issuers Request">
-			<merchant>
-				<account>' . $this->xmlEscape($this->merchant['account_id']) . '</account>
-				<site_id>' . $this->xmlEscape($this->merchant['site_id']) . '</site_id>
-				<site_secure_code>' . $this->xmlEscape($this->merchant['site_code']) . '</site_secure_code>
-			</merchant>
-		</idealissuers>';
-        return $request;
     }
 
     /*
@@ -589,27 +564,12 @@ class MultiSafepay
             $rootNode['gateways']['gateway'] = $xml_gateways;
         }
 
-        // get gatesways
+        // get gateways
         $gateways = array();
         foreach ($rootNode['gateways']['gateway'] as $xml_gateway) {
             $gateway = array();
             $gateway['id'] = $xml_gateway['id']['VALUE'];
             $gateway['description'] = $xml_gateway['description']['VALUE'];
-
-            // issuers
-            if (isset($xml_gateway['issuers'])) {
-                $issuers = array();
-
-                foreach ($xml_gateway['issuers']['issuer'] as $xml_issuer) {
-                    $issuer = array();
-                    $issuer['id'] = $xml_issuer['id']['VALUE'];
-                    $issuer['description'] = $xml_issuer['description']['VALUE'];
-                    $issuers[$issuer['id']] = $issuer;
-                }
-
-                $gateway['issuers'] = $issuers;
-            }
-
             $gateways[$gateway['id']] = $gateway;
         }
 
@@ -623,12 +583,6 @@ class MultiSafepay
 
     function createTransactionRequest()
     {
-        // issuer attribute
-        $issuer = "";
-        if (!empty($this->issuer)) {
-            $issuer = ' issuer="' . $this->xmlEscape($this->issuer) . '"';
-        }
-
         $request = '<?xml version="1.0" encoding="UTF-8"?>
     <redirecttransaction ua="' . $this->plugin_name . ' ' . $this->version . '">
       <merchant>
@@ -690,7 +644,7 @@ class MultiSafepay
         <manual>' . $this->xmlEscape($this->transaction['manual']) . '</manual>
         <daysactive>' . $this->xmlEscape($this->transaction['daysactive']) . '</daysactive>
         <secondsactive>' . $this->xmlEscape($this->transaction['secondsactive']) . '</secondsactive>
-        <gateway' . $issuer . '>' . $this->xmlEscape($this->transaction['gateway']) . '</gateway>
+        <gateway>' . $this->xmlEscape($this->transaction['gateway']) . '</gateway>
       </transaction>
       <signature>' . $this->xmlEscape($this->signature) . '</signature>
     </redirecttransaction>';
@@ -701,17 +655,6 @@ class MultiSafepay
     function createDirectXMLTransactionRequest()
     {
         $this->cart_xml = $this->cart->GetXML();
-        $issuer = "";
-        if (!empty($this->issuer)) {
-            $issuer = ' issuer="' . $this->xmlEscape($this->issuer) . '"';
-        }
-        if ($this->extravars != '') {
-            $gatewayinfo = '<gatewayinfo>
-							<issuerid>' . $this->extravars . '</issuerid>	
-						</gatewayinfo>';
-        } else {
-            $gatewayinfo = '';
-        }
 
         $request = '<?xml version="1.0" encoding="UTF-8"?>
 		<directtransaction ua="' . $this->plugin_name . ' ' . $this->version . '">
@@ -727,7 +670,7 @@ class MultiSafepay
 				<manual>' . $this->xmlEscape($this->transaction['manual']) . '</manual>
 				<daysactive>' . $this->xmlEscape($this->transaction['daysactive']) . '</daysactive>
                 <secondsactive>' . $this->xmlEscape($this->transaction['secondsactive']) . '</secondsactive>
-				<gateway' . $issuer . '>' . $this->xmlEscape($this->transaction['gateway']) . '</gateway>
+				<gateway>' . $this->xmlEscape($this->transaction['gateway']) . '</gateway>
 			</transaction>
 		  <merchant>
 			<account>' . $this->xmlEscape($this->merchant['account_id']) . '</account>
@@ -776,7 +719,6 @@ class MultiSafepay
 					<phone>' . $this->xmlEscape($this->delivery['phone']) . '</phone>
 					<email>' . $this->xmlEscape($this->delivery['email']) . '</email>
 				</customer-delivery>
-			' . $gatewayinfo . '
 			' . $this->cart_xml . '
 		  <signature>' . $this->xmlEscape($this->signature) . '</signature>
 		</directtransaction>';
@@ -786,10 +728,6 @@ class MultiSafepay
 
     function createDirectBankTransferTransactionRequest()
     {
-        $issuer = "";
-        if (!empty($this->issuer)) {
-            $issuer = ' issuer="' . $this->xmlEscape($this->issuer) . '"';
-        }
         $request = '<?xml version="1.0" encoding="UTF-8"?>
 		<directtransaction ua="' . $this->plugin_name . ' ' . $this->version . '">
 			<transaction>
@@ -804,7 +742,7 @@ class MultiSafepay
 				<manual>' . $this->xmlEscape($this->transaction['manual']) . '</manual>
 				<daysactive>' . $this->xmlEscape($this->transaction['daysactive']) . '</daysactive>
                 <secondsactive>' . $this->xmlEscape($this->transaction['secondsactive']) . '</secondsactive>
-				<gateway' . $issuer . '>' . $this->xmlEscape($this->transaction['gateway']) . '</gateway>
+				<gateway>' . $this->xmlEscape($this->transaction['gateway']) . '</gateway>
 			</transaction>
 		  <merchant>
 			<account>' . $this->xmlEscape($this->merchant['account_id']) . '</account>
@@ -960,7 +898,6 @@ class MultiSafepay
 				<bankaccount>' . $this->xmlEscape($this->gatewayinfo['bankaccount']) . '</bankaccount>
 				<phone>' . $this->xmlEscape($this->gatewayinfo['phone']) . '</phone>
 				<email>' . $this->xmlEscape($this->gatewayinfo['email']) . '</email>
-				<issuerid>' . $this->xmlEscape($this->gatewayinfo['issuer']) . '</issuerid>
 			</gatewayinfo>
 			<transaction>
 				<id>' . $this->xmlEscape($this->transaction['id']) . '</id>

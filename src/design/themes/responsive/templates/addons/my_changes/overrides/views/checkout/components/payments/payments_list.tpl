@@ -42,7 +42,7 @@
                                 {/if}
                             {/if}
                         {else}
-                            {if $smarty.session.cart.total >= $payment_data.processor_params.minamount && $smarty.session.cart.total <= $payment_data.processor_params.maxamount && $payment_data.processor_params.gateway != 'PAYAFTER'}
+                            {if $smarty.session.cart.total >= $payment_data.processor_params.minamount && $smarty.session.cart.total <= $payment_data.processor_params.maxamount && $payment_data.processor_params.gateway != 'BNPL_MF'}
                                 <li>
                                     <input id="payment_{$payment.payment_id}" class="radio valign cm-select-payment" type="radio" name="payment_id" value="{$payment.payment_id}" {if $payment_id == $payment.payment_id}checked="checked"{/if} />
                                     <div class="radio1">
@@ -96,7 +96,7 @@
                         {/if}
                     {/if}
                 {else}
-                    {if $payment_data.processor_params.gateway != 'VISA' && $payment_data.processor_params.gateway != 'MASTERCARD' && $smarty.session.settings.secondary_currencyC.value == 'EUR' && $payment_data.processor_params.gateway != 'PAYAFTER'}
+                    {if $payment_data.processor_params.gateway != 'VISA' && $payment_data.processor_params.gateway != 'MASTERCARD' && $smarty.session.settings.secondary_currencyC.value == 'EUR' && $payment_data.processor_params.gateway != 'BNPL_MF'}
                         {if $smarty.session.cart.total >= $payment_data.processor_params.minamount && $smarty.session.cart.total <= $payment_data.processor_params.maxamount}
                             <li>
                                 <input id="payment_{$payment.payment_id}" class="radio valign cm-select-payment" type="radio" name="payment_id" value="{$payment.payment_id}" {if $payment_id == $payment.payment_id}checked="checked"{/if} />
@@ -123,7 +123,7 @@
                                 {/if}
                             {/if}
                         {/if}
-                    {elseif $payment_data.params.gateway == 'PAYAFTER' && $smarty.session.cart.user_data.b_country == "NL"}
+                    {elseif $payment_data.params.gateway == 'BNPL_MF' && $smarty.session.cart.user_data.b_country == "NL"}
                         {if $smarty.session.cart.total >= $payment_data.processor_params.minamount && $smarty.session.cart.total <= $payment_data.processor_params.maxamount}
                             <li>
                                 <input id="payment_{$payment.payment_id}" class="radio valign cm-select-payment" type="radio" name="payment_id" value="{$payment.payment_id}" {if $payment_id == $payment.payment_id}checked="checked"{/if} />
@@ -181,7 +181,7 @@
                     {/if}
 
                 {else}
-                    {if $payment_data.processor_params.gateway != 'VISA' && $payment_data.processor_params.gateway != 'MASTERCARD' && $smarty.session.settings.secondary_currencyC.value == 'EUR' && $payment_data.processor_params.gateway != 'PAYAFTER'}
+                    {if $payment_data.processor_params.gateway != 'VISA' && $payment_data.processor_params.gateway != 'MASTERCARD' && $smarty.session.settings.secondary_currencyC.value == 'EUR' && $payment_data.processor_params.gateway != 'BNPL_MF'}
                         <li>
                             <input id="payment_{$payment.payment_id}" class="radio valign cm-select-payment" type="radio" name="payment_id" value="{$payment.payment_id}" {if $payment_id == $payment.payment_id}checked="checked"{/if} />
                             <div class="radio1">
@@ -207,7 +207,7 @@
                             {/if}
                         {/if}
 
-                    {elseif $payment_data.params.gateway == 'PAYAFTER' && $smarty.session.cart.user_data.b_country == "NL"}
+                    {elseif $payment_data.params.gateway == 'BNPL_MF' && $smarty.session.cart.user_data.b_country == "NL"}
                         {if $smarty.session.cart.total >= $payment_data.processor_params.minamount && $smarty.session.cart.total <= $payment_data.processor_params.maxamount}
                             <li>
                                 <input id="payment_{$payment.payment_id}" class="radio valign cm-select-payment" type="radio" name="payment_id" value="{$payment.payment_id}" {if $payment_id == $payment.payment_id}checked="checked"{/if} />

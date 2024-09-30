@@ -1,12 +1,12 @@
-FROM php:7.3-apache
+FROM php:8.1-apache
 
 RUN apt-get update && apt-get upgrade -y
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Amsterdam
-RUN apt-get install -y software-properties-common git curl zip mariadb-client libicu-dev libxml2-dev libxslt-dev libfreetype6-dev libjpeg-dev libpng-dev libzip-dev libcurl3-dev
+RUN apt-get install -y software-properties-common git curl zip mariadb-client libicu-dev libxml2-dev libxslt-dev libfreetype6-dev libjpeg-dev libpng-dev libzip-dev libcurl3-dev  libonig-dev nano
 
 # set up mailhog connection
-RUN debconf-set-selections << "postfix postfix/main_mailer_type string 'Internet Site'"
+RUN echo "postfix postfix/main_mailer_type string 'Internet Site'" | debconf-set-selections
 RUN apt-get install --assume-yes postfix
 RUN sed -i -E "s/( *relayhost *= *).*/\1[mail]:1025/g" /etc/postfix/main.cf
 
@@ -16,6 +16,8 @@ RUN { \
         echo 'xdebug.start_with_request=trigger'; \
         echo 'xdebug.client_host=host.docker.internal'; \
         echo 'xdebug.idekey=PHPSTORM'; \
+    	echo 'discover_client_host=1'; \
+    	echo 'xdebug.client_port=9003'; \
 	} | tee -a "/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini"
 RUN rm -rf /var/www/html
 
@@ -49,5 +51,7 @@ RUN { \
 	&& a2enconf docker-php && a2enmod headers && a2enmod rewrite
 
 RUN chown -R www-data:www-data /var/www/
+
+EXPOSE 9003
 
 USER www-data

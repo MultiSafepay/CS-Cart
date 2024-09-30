@@ -1,6 +1,6 @@
 {* $Id: cc_multisafepay.tpl,v 1.0 2008/04/20 letun Exp $ *}
-{assign var="r_url" value="`$config.http_location`/`$config.customer_index`?dispatch=payment_notification.notify&payment=multisafepay_payafter"}
-{assign var="e_url" value="`$config.http_location`/`$config.customer_index`?dispatch=payment_notification&payment_notification.result=multisafepay_payafter"}
+{assign var="r_url" value="`$config.http_location`/`$config.customer_index`?dispatch=payment_notification.notify&payment=multisafepay_bnpl_mf"}
+{assign var="e_url" value="`$config.http_location`/`$config.customer_index`?dispatch=payment_notification&payment_notification.result=multisafepay_bnpl_mf"}
 <h3>MultiSafepay</h3>
 <p />
 
@@ -13,7 +13,7 @@
     </select>
 </div>
 
-<input type="hidden" name="payment_data[processor_params][gateway]" maxlength="20" id="store_id" value="PAYAFTER" class="input-text" />
+<input type="hidden" name="payment_data[processor_params][gateway]" maxlength="20" id="store_id" value="BNPL_MF" class="input-text" />
 
 {* account id *}
 <div class="form-field">
