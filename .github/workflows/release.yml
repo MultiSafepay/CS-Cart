@@ -17,6 +17,8 @@ jobs:
         run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV # Extract the version number from the tag
       - name: Checkout code
         uses: actions/checkout@v2 # Checkout the code
+      - name: Install hub
+        run: sudo apt-get update && sudo apt-get install -y hub
       - name: Build project
         run: ./bin/release.sh ${{ steps.get_version.outputs.VERSION }} # Build the project
       - name: Upload Release Asset
