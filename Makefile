@@ -2,7 +2,7 @@ include .env
 export
 
 .PHONY: install
-install: deploy-cscart run-cscart-installer update-cscart-license install-multisafepay
+install: deploy-cscart run-cscart-installer install-multisafepay
 
 .PHONY: deploy-cscart
 deploy-cscart:
@@ -13,6 +13,11 @@ run-cscart-installer:
 	docker-compose exec app curl -o /tmp/wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
 	docker-compose exec app chmod +x /tmp/wait-for-it.sh
 	docker-compose exec app /tmp/wait-for-it.sh db:3306 --timeout=30
+	docker-compose exec app sed -i 's/CART-1111-1111-1111-1111/${CSCART_LICENSE_KEY}/' install/config.php
+	docker-compose exec app sed -i 's/admin@example.com/${CSCART_ADMIN_EMAIL}/' install/config.php
+	docker-compose exec app sed -i 's/admin/${CSCART_ADMIN_PASSWORD}/' install/config.php
+	docker-compose exec app sed -i 's/YOURVERYSECRETCEY/${CS_CART_SECRET_KEY}/' install/config.php
+	docker-compose exec app sed -i "s/'bg', 'no', 'sl'/'no'/" install/config.php
 	docker-compose exec app sed -i 's/localhost/db:3306/' install/config.php
 	docker-compose exec app sed -i 's/%DB_NAME%/${MYSQL_DATABASE}/' install/config.php
 	docker-compose exec app sed -i 's/%DB_USER%/${MYSQL_USER}/' install/config.php
@@ -21,11 +26,6 @@ run-cscart-installer:
 	docker-compose exec app /bin/sh -c 'cd install && php index.php'
 	docker-compose exec app mysql -h db -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} -e "UPDATE ${MYSQL_TABLE_PREFIX}settings_objects SET value = 'Y' WHERE name = 'secure_admin' OR name = 'secure_storefront'"
 	docker-compose exec app rm /tmp/wait-for-it.sh
-
-.PHONY: update-cscart-license
-update-cscart-license:
-	docker-compose exec app mysql -h db -u $(MYSQL_USER) -p$(MYSQL_PASSWORD) $(MYSQL_DATABASE) -e \
-  "UPDATE ${MYSQL_TABLE_PREFIX}settings_objects SET value = '$(CSCART_LICENSE_KEY)' WHERE name = 'license_number';"
 
 .PHONY: install-multisafepay
 install-multisafepay: msp-installer copy-modman modman-deploy
