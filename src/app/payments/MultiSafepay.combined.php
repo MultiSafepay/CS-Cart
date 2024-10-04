@@ -1354,6 +1354,15 @@ class MultiSafepay
         return $size - $pos - strlen($needle);
     }
 
+    /*
+     * Empty method to add retro compatibility
+     * when some old files are retained in the
+     * upgrading process
+     */
+    function getIdealIssuers()
+    {
+        return null;
+    }
 }
 
 /**
