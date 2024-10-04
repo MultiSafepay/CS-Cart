@@ -1,5 +1,5 @@
 ## 1.7.0
-Release date - Oct 2nd, 2024
+Release date - Oct 4th, 2024
 
 ### Added
 + PLGCSCS-145: Add Pay After Delivery: BNPL_MF
