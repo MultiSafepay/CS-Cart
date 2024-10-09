@@ -1,3 +1,11 @@
+## 1.7.0
+Release date - Oct 9th, 2024
+
+### Added
++ PLGCSCS-145: Add Pay After Delivery - BNPL_MF. Remove issuers from iDEAL.
+
+***
+
 ## 1.6.2
 Release date - Mar 17th, 2023
 
