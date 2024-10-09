@@ -286,15 +286,15 @@ if (defined('PAYMENT_NOTIFICATION')) {
     $msp->transaction['id'] = $order_id;
     $msp->transaction['currency'] = ($order_info['secondary_currency'] ? $order_info['secondary_currency'] : $processor_data['processor_params']['currency']);
     $msp->cart->currency = $msp->transaction['currency'];
-    $msp->transaction['amount'] = fn_format_price_by_currency_multisafepay($order_info['total'], CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY) * 100;
+    $msp->transaction['amount'] = (int) round(fn_format_price_by_currency_multisafepay($order_info['total'], CART_PRIMARY_CURRENCY, CART_SECONDARY_CURRENCY) * 100, 2);
     $msp->transaction['description'] = 'Order #' . $msp->transaction['id'];
     $msp->transaction['items'] = $cart_items;
     $msp->transaction['gateway'] = getGateway($processor_data['processor_params']['gateway']);
     $msp->plugin_name = 'CS-Cart 4.x';
-    $msp->version = '1.6.2';
+    $msp->version = '1.7.0';
     $msp->plugin['shop'] = 'CS-Cart';
     $msp->plugin['shop_version'] = PRODUCT_VERSION;
-    $msp->plugin['plugin_version'] = '1.6.1';
+    $msp->plugin['plugin_version'] = '1.7.0';
     $msp->plugin['partner'] = '';
     $msp->plugin['shop_root_url'] = Registry::get('config.current_location');
 
@@ -444,17 +444,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
         $msp->cart->AddAlternateTaxTables($taxtable);
     }
 
-
-    if ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer']) && $order_info['payment_info']['issuer'] != null) {
-        $msp->extravars = $order_info['payment_info']['issuer'];
-    }
-
-    if (in_array($processor_data['processor_params']['gateway'], array('CBC', 'KBC', 'INGHOME', 'ALIPAY', 'PAYPAL'))) {
-        $url = $msp->startDirectXMLTransaction();
-    } elseif ($processor_data['processor_params']['gateway'] == 'IDEAL' && isset($order_info['payment_info']['issuer']) && $order_info['payment_info']['issuer'] != null) {
-        if (empty($msp->gatewayinfo['issuer'])) {
-            $msp->gatewayinfo['issuer'] = $order_info['payment_info']['issuer'];
-        }
+    if (in_array($processor_data['processor_params']['gateway'], array('ALIPAY', 'CBC', 'IDEAL', 'INGHOME', 'KBC', 'PAYPAL'))) {
         $url = $msp->startDirectXMLTransaction();
     } else {
         $url = $msp->startCheckout();
