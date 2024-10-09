@@ -1,5 +1,9 @@
 .DS_Store
-.env
-/.idea
-/cscart
 .dist
+.env
+.idea
+/application
+/cscart/*
+!/cscart/.gitkeep
+/source/*
+!/source/.gitkeep
