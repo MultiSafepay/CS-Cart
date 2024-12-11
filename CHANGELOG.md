@@ -1,3 +1,19 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+***
+
+## 1.7.1
+Release date - Dec 11th, 2024
+
+### Changed
++ PLGCSCS-158: Replace CS Cart native method fn_redirect, being used in redirecting users to checkout pages with PHP native header method, since it breaks the iDEAL 2.0 payment URL format.
+
+***
+
 ## 1.7.0
 Release date - Oct 9th, 2024
 
