@@ -464,14 +464,15 @@ if (defined('PAYMENT_NOTIFICATION')) {
     }
 
     if (!isset($msp->error)) {
-        fn_redirect($url, true, true);
+        // fn_redirect is not working because override the URL with a wrong encoding, and iDEAL 2.0 fails.
+        header('Location: ' . $url);
         exit;
     } else {
         fn_set_notification('E', "There was an error while processing your transaction: (Code: $msp->error)", "");
 
         $url = fn_url("checkout.cart", AREA, 'current');
 
-        fn_redirect($url);
+        header('Location: ' . $url);
     }
     exit;
 }
