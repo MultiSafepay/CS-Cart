@@ -444,7 +444,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
         $msp->cart->AddAlternateTaxTables($taxtable);
     }
 
-    if (in_array($processor_data['processor_params']['gateway'], array('ALIPAY', 'CBC', 'IDEAL', 'INGHOME', 'KBC', 'PAYPAL'))) {
+    if (in_array($processor_data['processor_params']['gateway'], array('ALIPAY', 'BIZUM', 'CBC', 'IDEAL', 'INGHOME', 'KBC', 'PAYPAL'))) {
         $url = $msp->startDirectXMLTransaction();
     } else {
         $url = $msp->startCheckout();
