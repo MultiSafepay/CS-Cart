@@ -306,7 +306,7 @@ if (defined('PAYMENT_NOTIFICATION')) {
         fn_gather_additional_products_data($product_data, [
             'get_icon' => false,
             'get_detailed' => true,
-            'get_options' => true,
+            'get_options' => false,
             'get_discounts' => false,
             'get_additional' => true,
             'get_features' => true,
