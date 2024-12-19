@@ -6,11 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ***
 
+## 1.7.2
+Release date - Dec 19th, 2024
+
+### Added
++ DAVAMS-828: Add Bizum
+
+### Fixed
++ PLGCSCS-160: Fix argument issue in fn_gather_additional_products_data() affecting cart calculations
+
+***
+
 ## 1.7.1
 Release date - Dec 11th, 2024
 
 ### Changed
-+ PLGCSCS-158: Replace CS Cart native method fn_redirect, being used in redirecting users to checkout pages with PHP native header method, since it breaks the iDEAL 2.0 payment URL format.
++ PLGCSCS-158: Replace CS Cart native method fn_redirect, being used in redirecting users to checkout pages with PHP native header method, since it breaks the iDEAL 2.0 payment URL format
 
 ***
 
@@ -18,7 +29,7 @@ Release date - Dec 11th, 2024
 Release date - Oct 9th, 2024
 
 ### Added
-+ PLGCSCS-145: Add Pay After Delivery - BNPL_MF. Remove issuers from iDEAL.
++ PLGCSCS-145: Add Pay After Delivery - BNPL_MF. Remove issuers from iDEAL
 
 ***
 
@@ -149,12 +160,12 @@ Release date - February 26th, 2020
 + Support for American Express
 
 ## Bugfix ##
-+ Fixed bug with wiretransfer on returning.
-+ Added billing country check for BnO. If billing country is not 'NL' then don't show gateway.
-+ changed locale, use order language if available.
++ Fixed bug with wiretransfer on returning
++ Added billing country check for BnO. If billing country is not 'NL' then don't show gateway
++ changed locale, use order language if available
 
 # Release Notes - CS-Cart4 1.0.0 (Nov 15, 2013) #
 
 ## New plug-in ##
 + Supports all payment methodes including Pay After Delivery
-+ Support minimum and maximum value-restricions for showing a gateway.
++ Support minimum and maximum value-restricions for showing a gateway
