@@ -62,6 +62,7 @@ $payments = array(
     'BANCONTACT' => 'Bancontact',
     'BANKTRANS' => 'Bank transfer',
     'BELFIUS' => 'Belfius',
+    'BILLINK' => 'Billink',
     'BIZUM' => 'Bizum',
     'BNPL_MF' => 'Pay After Delivery',
     'CBC' => 'CBC',
