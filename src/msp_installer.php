@@ -68,7 +68,6 @@ $payments = array(
     'CBC' => 'CBC',
     'DBRTP' => 'Request to Pay',
     'DIRDEB' => 'Direct Debit',
-    'DIRECTBANK' => 'SOFORT Banking',
     'DOTPAY' => 'Dotpay',
     'EINVOICE' => 'E-Invoicing',
     'EPS' => 'EPS',

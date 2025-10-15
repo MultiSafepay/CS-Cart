@@ -16,7 +16,6 @@ src/app/payments/multisafepay_bnpl_mf.php app/payments/multisafepay_bnpl_mf.php
 src/app/payments/multisafepay_cbc.php app/payments/multisafepay_cbc.php
 src/app/payments/multisafepay_dbrtp.php app/payments/multisafepay_dbrtp.php
 src/app/payments/multisafepay_dirdeb.php app/payments/multisafepay_dirdeb.php
-src/app/payments/multisafepay_directbank.php app/payments/multisafepay_directbank.php
 src/app/payments/multisafepay_dotpay.php app/payments/multisafepay_dotpay.php
 src/app/payments/multisafepay_einvoice.php app/payments/multisafepay_einvoice.php
 src/app/payments/multisafepay_eps.php app/payments/multisafepay_eps.php
@@ -49,7 +48,6 @@ src/design/backend/templates/views/orders/components/payments/msp_bnpl_mf.tpl de
 src/design/backend/templates/views/orders/components/payments/msp_cbc.tpl design/backend/templates/views/orders/components/payments/msp_cbc.tpl
 src/design/backend/templates/views/orders/components/payments/msp_dbrtp.tpl design/backend/templates/views/orders/components/payments/msp_dbrtp.tpl
 src/design/backend/templates/views/orders/components/payments/msp_dirdeb.tpl design/backend/templates/views/orders/components/payments/msp_dirdeb.tpl
-src/design/backend/templates/views/orders/components/payments/msp_directbank.tpl design/backend/templates/views/orders/components/payments/msp_directbank.tpl
 src/design/backend/templates/views/orders/components/payments/msp_dotpay.tpl design/backend/templates/views/orders/components/payments/msp_dotpay.tpl
 src/design/backend/templates/views/orders/components/payments/msp_einvoice.tpl design/backend/templates/views/orders/components/payments/msp_einvoice.tpl
 src/design/backend/templates/views/orders/components/payments/msp_eps.tpl design/backend/templates/views/orders/components/payments/msp_eps.tpl
@@ -83,7 +81,6 @@ src/design/backend/templates/views/payments/components/cc_processors/msp_bnpl_mf
 src/design/backend/templates/views/payments/components/cc_processors/msp_cbc.tpl design/backend/templates/views/payments/components/cc_processors/msp_cbc.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_dbrtp.tpl design/backend/templates/views/payments/components/cc_processors/msp_dbrtp.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_dirdeb.tpl design/backend/templates/views/payments/components/cc_processors/msp_dirdeb.tpl
-src/design/backend/templates/views/payments/components/cc_processors/msp_directbank.tpl design/backend/templates/views/payments/components/cc_processors/msp_directbank.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_dotpay.tpl design/backend/templates/views/payments/components/cc_processors/msp_dotpay.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_einvoice.tpl design/backend/templates/views/payments/components/cc_processors/msp_einvoice.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_eps.tpl design/backend/templates/views/payments/components/cc_processors/msp_eps.tpl
@@ -117,7 +114,6 @@ src/design/themes/basic/templates/views/orders/components/payments/msp_bnpl_mf.t
 src/design/themes/basic/templates/views/orders/components/payments/msp_cbc.tpl design/themes/basic/templates/views/orders/components/payments/msp_cbc.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_dbrtp.tpl design/themes/basic/templates/views/orders/components/payments/msp_dbrtp.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_dirdeb.tpl design/themes/basic/templates/views/orders/components/payments/msp_dirdeb.tpl
-src/design/themes/basic/templates/views/orders/components/payments/msp_directbank.tpl design/themes/basic/templates/views/orders/components/payments/msp_directbank.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_dotpay.tpl design/themes/basic/templates/views/orders/components/payments/msp_dotpay.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_einvoice.tpl design/themes/basic/templates/views/orders/components/payments/msp_einvoice.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_eps.tpl design/themes/basic/templates/views/orders/components/payments/msp_eps.tpl
@@ -154,7 +150,6 @@ src/design/themes/responsive/templates/views/orders/components/payments/msp_bnpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_cbc.tpl design/themes/responsive/templates/views/orders/components/payments/msp_cbc.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_dbrtp.tpl design/themes/responsive/templates/views/orders/components/payments/msp_dbrtp.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_dirdeb.tpl design/themes/responsive/templates/views/orders/components/payments/msp_dirdeb.tpl
-src/design/themes/responsive/templates/views/orders/components/payments/msp_directbank.tpl design/themes/responsive/templates/views/orders/components/payments/msp_directbank.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_dotpay.tpl design/themes/responsive/templates/views/orders/components/payments/msp_dotpay.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_einvoice.tpl design/themes/responsive/templates/views/orders/components/payments/msp_einvoice.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_eps.tpl design/themes/responsive/templates/views/orders/components/payments/msp_eps.tpl
