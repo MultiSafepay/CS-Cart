@@ -56,7 +56,7 @@ run-cscart-installer:
 	docker-compose exec app sed -i 's/%DB_PASS%/${MYSQL_PASSWORD}/' install/config.php
 	docker-compose exec app sed -i 's/%HTTP_HOST%/https:\/\/${APP_SUBDOMAIN}.${EXPOSE_HOST}/' install/config.php
 	docker-compose exec app /bin/sh -c 'cd install && php index.php'
-	docker-compose exec app mysql -h db -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} -e "UPDATE ${MYSQL_TABLE_PREFIX}settings_objects SET value = 'Y' WHERE name = 'secure_admin' OR name = 'secure_storefront'"
+	docker-compose exec app mysql -h db -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} --ssl=0 -e "UPDATE ${MYSQL_TABLE_PREFIX}settings_objects SET value = 'Y' WHERE name = 'secure_admin' OR name = 'secure_storefront'"
 	docker-compose exec app rm /tmp/wait-for-it.sh
 
 .PHONY: install-multisafepay

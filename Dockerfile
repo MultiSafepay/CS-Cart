@@ -1,16 +1,20 @@
 FROM php:8.1-apache
 
-RUN apt-get update && apt-get upgrade -y
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Amsterdam
-RUN apt-get install -y software-properties-common git curl zip mariadb-client libicu-dev libxml2-dev libxslt-dev libfreetype6-dev libjpeg-dev libpng-dev libzip-dev libcurl3-dev libonig-dev openssl nano
+
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y git curl zip mariadb-client libicu-dev \
+    libxml2-dev libxslt-dev libfreetype6-dev libjpeg-dev libpng-dev libzip-dev \
+    libcurl4-openssl-dev libonig-dev openssl nano && \
+    rm -rf /var/lib/apt/lists/*
 
 # set up mailhog connection
 RUN echo "postfix postfix/main_mailer_type string 'Internet Site'" | debconf-set-selections
-RUN apt-get install --assume-yes postfix
+RUN apt-get update && apt-get install --assume-yes postfix && rm -rf /var/lib/apt/lists/*
 RUN sed -i -E "s/( *relayhost *= *).*/\1[mail]:1025/g" /etc/postfix/main.cf
 
-RUN pecl install xdebug-3.1.0 && docker-php-ext-enable xdebug
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 RUN { \
     echo 'xdebug.mode=debug'; \
     echo 'xdebug.start_with_request=trigger'; \
@@ -26,7 +30,8 @@ RUN docker-php-ext-install mbstring zip xml soap pdo_mysql mysqli curl sockets e
 RUN apt-get update && apt-get install -y \
     imagemagick libmagickwand-dev --no-install-recommends \
     && pecl install imagick \
-    && docker-php-ext-enable imagick
+    && docker-php-ext-enable imagick \
+    && rm -rf /var/lib/apt/lists/*
 RUN curl https://raw.githubusercontent.com/colinmollenhour/modman/master/modman --silent --output /usr/local/bin/modman && chmod +x /usr/local/bin/modman
 
 RUN { \
