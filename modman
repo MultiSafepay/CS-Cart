@@ -23,6 +23,7 @@ src/app/payments/multisafepay_ferbuy.php app/payments/multisafepay_ferbuy.php
 src/app/payments/multisafepay_giropay.php app/payments/multisafepay_giropay.php
 src/app/payments/multisafepay_ideal.php app/payments/multisafepay_ideal.php
 src/app/payments/multisafepay_idealqr.php app/payments/multisafepay_idealqr.php
+src/app/payments/multisafepay_in3.php app/payments/multisafepay_in3.php
 src/app/payments/multisafepay_ing.php app/payments/multisafepay_ing.php
 src/app/payments/multisafepay_kbc.php app/payments/multisafepay_kbc.php
 src/app/payments/multisafepay_klarna.php app/payments/multisafepay_klarna.php
@@ -55,6 +56,7 @@ src/design/backend/templates/views/orders/components/payments/msp_ferbuy.tpl des
 src/design/backend/templates/views/orders/components/payments/msp_giropay.tpl design/backend/templates/views/orders/components/payments/msp_giropay.tpl
 src/design/backend/templates/views/orders/components/payments/msp_ideal.tpl design/backend/templates/views/orders/components/payments/msp_ideal.tpl
 src/design/backend/templates/views/orders/components/payments/msp_idealqr.tpl design/backend/templates/views/orders/components/payments/msp_idealqr.tpl
+src/design/backend/templates/views/orders/components/payments/msp_in3.tpl design/backend/templates/views/orders/components/payments/msp_in3.tpl
 src/design/backend/templates/views/orders/components/payments/msp_ing.tpl design/backend/templates/views/orders/components/payments/msp_ing.tpl
 src/design/backend/templates/views/orders/components/payments/msp_kbc.tpl design/backend/templates/views/orders/components/payments/msp_kbc.tpl
 src/design/backend/templates/views/orders/components/payments/msp_klarna.tpl design/backend/templates/views/orders/components/payments/msp_klarna.tpl
@@ -88,6 +90,7 @@ src/design/backend/templates/views/payments/components/cc_processors/msp_ferbuy.
 src/design/backend/templates/views/payments/components/cc_processors/msp_giropay.tpl design/backend/templates/views/payments/components/cc_processors/msp_giropay.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_ideal.tpl design/backend/templates/views/payments/components/cc_processors/msp_ideal.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_idealqr.tpl design/backend/templates/views/payments/components/cc_processors/msp_idealqr.tpl
+src/design/backend/templates/views/payments/components/cc_processors/msp_in3.tpl design/backend/templates/views/payments/components/cc_processors/msp_in3.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_ing.tpl design/backend/templates/views/payments/components/cc_processors/msp_ing.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_kbc.tpl design/backend/templates/views/payments/components/cc_processors/msp_kbc.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_klarna.tpl design/backend/templates/views/payments/components/cc_processors/msp_klarna.tpl
@@ -121,6 +124,7 @@ src/design/themes/basic/templates/views/orders/components/payments/msp_ferbuy.tp
 src/design/themes/basic/templates/views/orders/components/payments/msp_giropay.tpl design/themes/basic/templates/views/orders/components/payments/msp_giropay.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_ideal.tpl design/themes/basic/templates/views/orders/components/payments/msp_ideal.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_idealqr.tpl design/themes/basic/templates/views/orders/components/payments/msp_idealqr.tpl
+src/design/themes/basic/templates/views/orders/components/payments/msp_in3.tpl design/themes/basic/templates/views/orders/components/payments/msp_in3.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_ing.tpl design/themes/basic/templates/views/orders/components/payments/msp_ing.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_kbc.tpl design/themes/basic/templates/views/orders/components/payments/msp_kbc.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_klarna.tpl design/themes/basic/templates/views/orders/components/payments/msp_klarna.tpl
@@ -157,6 +161,7 @@ src/design/themes/responsive/templates/views/orders/components/payments/msp_ferb
 src/design/themes/responsive/templates/views/orders/components/payments/msp_giropay.tpl design/themes/responsive/templates/views/orders/components/payments/msp_giropay.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_ideal.tpl design/themes/responsive/templates/views/orders/components/payments/msp_ideal.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_idealqr.tpl design/themes/responsive/templates/views/orders/components/payments/msp_idealqr.tpl
+src/design/themes/responsive/templates/views/orders/components/payments/msp_in3.tpl design/themes/responsive/templates/views/orders/components/payments/msp_in3.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_ing.tpl design/themes/responsive/templates/views/orders/components/payments/msp_ing.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_kbc.tpl design/themes/responsive/templates/views/orders/components/payments/msp_kbc.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_klarna.tpl design/themes/responsive/templates/views/orders/components/payments/msp_klarna.tpl

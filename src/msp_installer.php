@@ -75,6 +75,7 @@ $payments = array(
     'GIROPAY' => 'Giropay',
     'IDEAL' => 'iDEAL | Wero',
     'IDEALQR' => 'iDEAL QR',
+    'IN3' => 'in3',
     'ING' => 'ING Home Pay',
     'KBC' => 'KBC',
     'KLARNA' => 'Klarna',
