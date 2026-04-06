@@ -43,3 +43,46 @@ function fn_is_multisafepay_order($order_info)
     }
     return strncmp($order_info['payment_method']['processor'], 'MultiSafepay', 12) === 0;
 }
+
+/**
+ * Normalizes wallet payment label in order info for all templates/views.
+ *
+ * @param array $order           Order data
+ * @param array $additional_data Additional raw order data entries
+ *
+ * @return void
+ */
+function fn_multisafepay_get_order_info(&$order, $additional_data)
+{
+    if (empty($order['payment_info']['payment_method']) || empty($order['payment_method'])) {
+        return;
+    }
+
+    // Keep backend order details unchanged: admin already has dedicated
+    // payment info fields (Payment method / Payment type).
+    if (defined('AREA') && AREA === 'A') {
+        return;
+    }
+
+    if (!fn_is_multisafepay_order($order)) {
+        return;
+    }
+
+    $gateway_code = strtoupper((string) ($order['payment_method']['processor_params']['gateway'] ?? ''));
+    $processor_script = strtolower((string) ($order['payment_method']['processor_script'] ?? ''));
+    $payment_method_display = (string) ($order['payment_info']['payment_method'] ?? '');
+
+    $is_wallet_gateway = in_array($gateway_code, ['APPLEPAY', 'GOOGLEPAY'], true);
+    $is_wallet_script = in_array($processor_script, ['multisafepay_applepay.php', 'multisafepay_googlepay.php'], true);
+    $is_wallet_display = stripos($payment_method_display, 'Apple Pay') !== false
+        || stripos($payment_method_display, 'Google Pay') !== false;
+
+    if (!$is_wallet_gateway && !$is_wallet_script && !$is_wallet_display) {
+        return;
+    }
+
+    $order['payment_method']['payment'] = $payment_method_display;
+
+    // Keep rendering clean when templates append description next to payment label.
+    $order['payment_method']['description'] = '';
+}

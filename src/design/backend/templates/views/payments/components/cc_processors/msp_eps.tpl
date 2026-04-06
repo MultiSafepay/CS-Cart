@@ -13,18 +13,18 @@
     </select>
 </div>
 
-<input type="hidden" name="payment_data[processor_params][gateway]" maxlength="20" id="store_id" value="EPS" class="input-text" />
+<input type="hidden" name="payment_data[processor_params][gateway]" maxlength="20" id="msp_gateway" value="EPS" class="input-text" />
 
 {* account id *}
 <div class="form-field">
-    <label for="store_id">Account ID:</label>
-    <input type="text" name="payment_data[processor_params][account]" maxlength="20" id="store_id" value="{$processor_params.account|escape}" class="input-text" />
+    <label for="msp_account">Account ID:</label>
+    <input type="text" name="payment_data[processor_params][account]" maxlength="20" id="msp_account" value="{$processor_params.account|escape}" class="input-text" />
 </div>
 
 {* site id *}
 <div class="form-field">
-    <label for="store_id">Site ID:</label>
-    <input type="text" name="payment_data[processor_params][site_id]" maxlength="16" id="store_id" value="{$processor_params.site_id|escape}" class="input-text" />
+    <label for="msp_site_id">Site ID:</label>
+    <input type="text" name="payment_data[processor_params][site_id]" maxlength="16" id="msp_site_id" value="{$processor_params.site_id|escape}" class="input-text" />
 </div>
 
 {* Security Code *}
@@ -35,9 +35,9 @@
 
 {* Notificatie URL *}
 <div class="form-field">
-    <label for="notificationurl">Notificatie URL:</label>
+    <label>Notificatie URL:</label>
     {$r_url}
-    <input type="hidden" name="payment_data[processor_params][notificationurl]" id="securitycode" value="{$r_url|escape}"/>
+    <input type="hidden" name="payment_data[processor_params][notificationurl]" id="msp_notificationurl" value="{$r_url|escape}"/>
 </div>
 
 

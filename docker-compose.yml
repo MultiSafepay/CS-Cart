@@ -8,8 +8,8 @@ services:
     sysctls:
       - net.ipv4.ip_unprivileged_port_start=0
     volumes:
-      - ./:/var/www/html/.modman/multisafepay
       - ./cscart:/var/www/html/
+      - ./:/var/www/modman/multisafepay
     environment:
       PHP_IDE_CONFIG: "serverName=app"
   db:

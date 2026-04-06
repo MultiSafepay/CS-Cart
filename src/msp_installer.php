@@ -20,19 +20,26 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-define('BOOTSTRAP', '');
 if (function_exists('date_default_timezone_set')) {
     date_default_timezone_set('Europe/Amsterdam');
 }
 
-// Load user configuration
-define('AREA', true);
-define('DIR_ROOT', __DIR__);
+// Bootstrap CS-Cart runtime, so add-on APIs are available across versions.
+if (!defined('AREA')) {
+    define('AREA', 'A');
+}
+require_once(__DIR__ . '/init.php');
 
-require_once(DIR_ROOT . '/config.php');
+$runtime_config = Tygh\Registry::get('config');
+$config = [
+    'db_host' => (string) $runtime_config['db_host'],
+    'db_user' => (string) $runtime_config['db_user'],
+    'db_password' => (string) $runtime_config['db_password'],
+    'db_name' => (string) $runtime_config['db_name'],
+    'table_prefix' => (string) $runtime_config['table_prefix'],
+];
 
-// Declare a global variable to indicate if CLI is being used
-global $isCli;
+// Determine whether script is executed from CLI.
 $isCli = (PHP_SAPI === 'cli');
 
 if ($isCli) {
@@ -51,14 +58,17 @@ foreach (PAYMENTS_TO_RENAME as $oldName => $newName) {
     if ($isCli) {
         echo "Renaming payment: $oldName to $newName\n\n";
     }
-    renamePaymentNames($oldName, $newName, $config);
+    renamePaymentNames($oldName, $newName, $config, $isCli, $errorCount);
 }
+
+ensureMultisafepayAddonIsActive($isCli);
 
 $payments = array(
     'AFTERPAY' => 'AfterPay',
     'ALIPAY' => 'Alipay',
     'AMEX' => 'American Express',
     'APPLEPAY' => 'Apple Pay',
+    'GOOGLEPAY' => 'Google Pay',
     'BANCONTACT' => 'Bancontact',
     'BANKTRANS' => 'Bank transfer',
     'BELFIUS' => 'Belfius',
@@ -94,7 +104,7 @@ foreach ($payments as $paymentcode => $naam) {
     if ($isCli) {
         echo "Updating payment: $naam with code: $paymentcode\n";
     }
-    upd($naam, '`' . $config['table_prefix'] . 'payment_processors` SET `processor` = \'MultiSafepay ' . $naam . '\', `processor_script` = \'multisafepay_' . strtolower($paymentcode) . '.php\', `admin_template` = \'msp_' . strtolower($paymentcode) . '.tpl\', `processor_template` = \'views/orders/components/payments/msp_' . strtolower($paymentcode) . '.tpl\', `callback` = \'Y\', `type` = \'P\'', $config);
+    upd($naam, '`' . $config['table_prefix'] . 'payment_processors` SET `processor` = \'MultiSafepay ' . $naam . '\', `processor_script` = \'multisafepay_' . strtolower($paymentcode) . '.php\', `admin_template` = \'msp_' . strtolower($paymentcode) . '.tpl\', `processor_template` = \'views/orders/components/payments/msp_' . strtolower($paymentcode) . '.tpl\', `callback` = \'Y\', `type` = \'P\'', $config, $isCli, $errorCount);
 }
 
 $html = '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="nl-nl" lang="nl-nl">';
@@ -126,9 +136,8 @@ if (!$isCli) {
     echo $html;
 }
 
-function upd($naam, $query, $config)
+function upd($naam, $query, $config, $isCli, &$errorCount)
 {
-    global $errorCount, $isCli;
     if ($isCli) {
         echo "\nConnecting to database for updating payment: $naam\n";
     }
@@ -164,9 +173,8 @@ function upd($naam, $query, $config)
     }
 }
 
-function renamePaymentNames($oldName, $newName, $config)
+function renamePaymentNames($oldName, $newName, $config, $isCli, &$errorCount)
 {
-    global $errorCount, $isCli;
     if ($isCli) {
         echo "Connecting to database for renaming payment: $oldName to $newName\n";
     }
@@ -196,6 +204,55 @@ function renamePaymentNames($oldName, $newName, $config)
             echo "Error renaming $oldName to $newName: " . $mysqli->error . "\n\n";
         }
         $errorCount++;
+    }
+}
+
+/**
+ * Ensure the MultiSafepay addon is installed and active so wallet label hooks are available
+ * across older and newer CS-Cart versions.
+ *
+ * @return void
+ */
+function ensureMultisafepayAddonIsActive($isCli)
+{
+    $addon_id = 'multisafepay';
+
+    if ($isCli) {
+        echo "Ensuring add-on '$addon_id' is installed and active...\n";
+    }
+
+    $addon_xml_path = __DIR__ . '/app/addons/' . $addon_id . '/addon.xml';
+    if (!file_exists($addon_xml_path)) {
+        if ($isCli) {
+            echo "Add-on '$addon_id' files are not deployed yet. Skipping activation for now.\n";
+        }
+        return;
+    }
+
+    if (function_exists('fn_install_addon')) {
+        fn_install_addon($addon_id, false, false, true);
+    }
+
+    $addon_installed = function_exists('fn_check_addon_exists') &&
+        (bool) fn_check_addon_exists($addon_id);
+
+    if (!$addon_installed) {
+        if ($isCli) {
+            echo "Add-on '$addon_id' is not installed in DB yet. Skipping activation for now.\n";
+        }
+        return;
+    }
+
+    if (function_exists('fn_update_addon_status')) {
+        fn_update_addon_status($addon_id, 'A', false, true, true);
+    }
+
+    $status = function_exists('db_get_field')
+        ? (string) db_get_field("SELECT status FROM ?:addons WHERE addon = ?s", $addon_id)
+        : '';
+
+    if ($isCli) {
+        echo "Add-on '$addon_id' status: " . ($status !== '' ? $status : 'N/A') . "\n";
     }
 }
 

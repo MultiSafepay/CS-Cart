@@ -21,6 +21,7 @@ src/app/payments/multisafepay_einvoice.php app/payments/multisafepay_einvoice.ph
 src/app/payments/multisafepay_eps.php app/payments/multisafepay_eps.php
 src/app/payments/multisafepay_ferbuy.php app/payments/multisafepay_ferbuy.php
 src/app/payments/multisafepay_giropay.php app/payments/multisafepay_giropay.php
+src/app/payments/multisafepay_googlepay.php app/payments/multisafepay_googlepay.php
 src/app/payments/multisafepay_ideal.php app/payments/multisafepay_ideal.php
 src/app/payments/multisafepay_idealqr.php app/payments/multisafepay_idealqr.php
 src/app/payments/multisafepay_in3.php app/payments/multisafepay_in3.php
@@ -40,6 +41,7 @@ src/app/payments/multisafepay_wallet.php app/payments/multisafepay_wallet.php
 src/design/backend/templates/views/orders/components/payments/msp_afterpay.tpl design/backend/templates/views/orders/components/payments/msp_afterpay.tpl
 src/design/backend/templates/views/orders/components/payments/msp_alipay.tpl design/backend/templates/views/orders/components/payments/msp_alipay.tpl
 src/design/backend/templates/views/orders/components/payments/msp_amex.tpl design/backend/templates/views/orders/components/payments/msp_amex.tpl
+src/design/backend/templates/views/orders/components/payments/msp_applepay.tpl design/backend/templates/views/orders/components/payments/msp_applepay.tpl
 src/design/backend/templates/views/orders/components/payments/msp_bancontact.tpl design/backend/templates/views/orders/components/payments/msp_bancontact.tpl
 src/design/backend/templates/views/orders/components/payments/msp_banktrans.tpl design/backend/templates/views/orders/components/payments/msp_banktrans.tpl
 src/design/backend/templates/views/orders/components/payments/msp_belfius.tpl design/backend/templates/views/orders/components/payments/msp_belfius.tpl
@@ -54,6 +56,7 @@ src/design/backend/templates/views/orders/components/payments/msp_einvoice.tpl d
 src/design/backend/templates/views/orders/components/payments/msp_eps.tpl design/backend/templates/views/orders/components/payments/msp_eps.tpl
 src/design/backend/templates/views/orders/components/payments/msp_ferbuy.tpl design/backend/templates/views/orders/components/payments/msp_ferbuy.tpl
 src/design/backend/templates/views/orders/components/payments/msp_giropay.tpl design/backend/templates/views/orders/components/payments/msp_giropay.tpl
+src/design/backend/templates/views/orders/components/payments/msp_googlepay.tpl design/backend/templates/views/orders/components/payments/msp_googlepay.tpl
 src/design/backend/templates/views/orders/components/payments/msp_ideal.tpl design/backend/templates/views/orders/components/payments/msp_ideal.tpl
 src/design/backend/templates/views/orders/components/payments/msp_idealqr.tpl design/backend/templates/views/orders/components/payments/msp_idealqr.tpl
 src/design/backend/templates/views/orders/components/payments/msp_in3.tpl design/backend/templates/views/orders/components/payments/msp_in3.tpl
@@ -88,6 +91,7 @@ src/design/backend/templates/views/payments/components/cc_processors/msp_einvoic
 src/design/backend/templates/views/payments/components/cc_processors/msp_eps.tpl design/backend/templates/views/payments/components/cc_processors/msp_eps.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_ferbuy.tpl design/backend/templates/views/payments/components/cc_processors/msp_ferbuy.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_giropay.tpl design/backend/templates/views/payments/components/cc_processors/msp_giropay.tpl
+src/design/backend/templates/views/payments/components/cc_processors/msp_googlepay.tpl design/backend/templates/views/payments/components/cc_processors/msp_googlepay.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_ideal.tpl design/backend/templates/views/payments/components/cc_processors/msp_ideal.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_idealqr.tpl design/backend/templates/views/payments/components/cc_processors/msp_idealqr.tpl
 src/design/backend/templates/views/payments/components/cc_processors/msp_in3.tpl design/backend/templates/views/payments/components/cc_processors/msp_in3.tpl
@@ -122,6 +126,7 @@ src/design/themes/basic/templates/views/orders/components/payments/msp_einvoice.
 src/design/themes/basic/templates/views/orders/components/payments/msp_eps.tpl design/themes/basic/templates/views/orders/components/payments/msp_eps.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_ferbuy.tpl design/themes/basic/templates/views/orders/components/payments/msp_ferbuy.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_giropay.tpl design/themes/basic/templates/views/orders/components/payments/msp_giropay.tpl
+src/design/themes/basic/templates/views/orders/components/payments/msp_googlepay.tpl design/themes/basic/templates/views/orders/components/payments/msp_googlepay.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_ideal.tpl design/themes/basic/templates/views/orders/components/payments/msp_ideal.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_idealqr.tpl design/themes/basic/templates/views/orders/components/payments/msp_idealqr.tpl
 src/design/themes/basic/templates/views/orders/components/payments/msp_in3.tpl design/themes/basic/templates/views/orders/components/payments/msp_in3.tpl
@@ -141,6 +146,8 @@ src/design/themes/basic/templates/views/orders/components/payments/msp_wallet.tp
 src/design/themes/basic/templates/addons/my_changes/overrides/views/checkout/components/payments/payments_list.tpl design/themes/basic/templates/addons/my_changes/overrides/views/checkout/components/payments/payments_list.tpl
 src/design/themes/responsive/templates/addons/my_changes/overrides/views/checkout/components/payments/payments_list.tpl design/themes/responsive/templates/addons/my_changes/overrides/views/checkout/components/payments/payments_list.tpl
 
+src/design/themes/responsive/templates/addons/multisafepay/hooks/orders/totals_payment.override.tpl design/themes/responsive/templates/addons/multisafepay/hooks/orders/totals_payment.override.tpl
+
 src/design/themes/responsive/templates/views/orders/components/payments/msp_afterpay.tpl design/themes/responsive/templates/views/orders/components/payments/msp_afterpay.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_alipay.tpl design/themes/responsive/templates/views/orders/components/payments/msp_alipay.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_amex.tpl design/themes/responsive/templates/views/orders/components/payments/msp_amex.tpl
@@ -159,6 +166,7 @@ src/design/themes/responsive/templates/views/orders/components/payments/msp_einv
 src/design/themes/responsive/templates/views/orders/components/payments/msp_eps.tpl design/themes/responsive/templates/views/orders/components/payments/msp_eps.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_ferbuy.tpl design/themes/responsive/templates/views/orders/components/payments/msp_ferbuy.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_giropay.tpl design/themes/responsive/templates/views/orders/components/payments/msp_giropay.tpl
+src/design/themes/responsive/templates/views/orders/components/payments/msp_googlepay.tpl design/themes/responsive/templates/views/orders/components/payments/msp_googlepay.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_ideal.tpl design/themes/responsive/templates/views/orders/components/payments/msp_ideal.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_idealqr.tpl design/themes/responsive/templates/views/orders/components/payments/msp_idealqr.tpl
 src/design/themes/responsive/templates/views/orders/components/payments/msp_in3.tpl design/themes/responsive/templates/views/orders/components/payments/msp_in3.tpl

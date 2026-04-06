@@ -60,7 +60,7 @@ run-cscart-installer:
 	docker-compose exec app rm /tmp/wait-for-it.sh
 
 .PHONY: install-multisafepay
-install-multisafepay: msp-installer modman-deploy
+install-multisafepay: modman-deploy msp-installer
 	@# - ignore the error if the command fails
 	@# || true ensures that the command returns a successful exit code due
 	@# to the errors that chown throws when pass through .git folder
@@ -74,12 +74,12 @@ msp-installer:
 
 .PHONY: modman-deploy
 modman-deploy:
-	docker-compose exec app modman deploy-all
+	docker-compose exec app /bin/sh -c 'cd /var/www/html && modman deploy --modmandir ../modman multisafepay --force --quiet'
 
 .PHONY: modman
 modman:
-	docker-compose exec app modman deploy multisafepay --force --quiet
+	docker-compose exec app /bin/sh -c 'cd /var/www/html && modman deploy --modmandir ../modman multisafepay --force --quiet'
 
 .PHONY: modman-copy
 modman-copy:
-	docker-compose exec app modman deploy multisafepay --copy --force --quiet
+	docker-compose exec app /bin/sh -c 'cd /var/www/html && modman deploy --modmandir ../modman multisafepay --copy --force --quiet'

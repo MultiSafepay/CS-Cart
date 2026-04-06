@@ -36,8 +36,9 @@ if (isset($_GET['type'])) {
 
 if (defined('PAYMENT_NOTIFICATION')) {
     if (isset($_REQUEST['type'])) {
-        if ($_REQUEST['type'] == 'initial') {
-            $url = 'payment_notification.return&payment=multisafepay_ideal&transactionid=' . $_REQUEST['transactionid'];
+        if ($_REQUEST['type'] == 'initial' && $mode == 'return') {
+            $return_payment = fn_multisafepay_get_return_payment($_REQUEST);
+            $url = 'payment_notification.return&payment=' . $return_payment . '&transactionid=' . $_REQUEST['transactionid'];
             $url = fn_url($url, AREA, 'current');
 
             echo '<a href="' . $url . '" >Keer terug naar de website.</a>';
@@ -77,6 +78,24 @@ if (defined('PAYMENT_NOTIFICATION')) {
             $amount = $details['customer']['amount'];
             $order_id = $details['transaction']['id'];
             $pp_response['transaction_id'] = $order_id;
+            if (fn_multisafepay_is_wallet_gateway((string) ($processor_data['processor_params']['gateway'] ?? ''))) {
+                $wallet_payment_info = [];
+                $payment_method_display = fn_multisafepay_get_payment_method_display($processor_data, $details);
+                $payment_type_display = fn_multisafepay_get_payment_type_display($details);
+
+                if ($payment_method_display !== '') {
+                    $pp_response['payment_method'] = $payment_method_display;
+                    $wallet_payment_info['payment_method'] = $payment_method_display;
+                }
+                if ($payment_type_display !== '') {
+                    $pp_response['payment_type'] = $payment_type_display;
+                    $wallet_payment_info['payment_type'] = $payment_type_display;
+                }
+
+                if (!empty($wallet_payment_info)) {
+                    fn_update_order_payment_info((int) $order_id, $wallet_payment_info);
+                }
+            }
 
             $msp_statuses = $processor_data['processor_params']['statuses'];
 
@@ -180,8 +199,9 @@ if (defined('PAYMENT_NOTIFICATION')) {
             }
         }
 
-        if (isset($_REQUEST['type'])) {
-            $url = 'payment_notification.return&payment=multisafepay_ideal&transactionid=' . $order_id;
+        if (isset($_REQUEST['type']) && $mode == 'return') {
+            $return_payment = fn_multisafepay_get_return_payment($_REQUEST);
+            $url = 'payment_notification.return&payment=' . $return_payment . '&transactionid=' . $order_id;
             $url = fn_url($url, AREA, 'current');
             echo '<a href="' . $url . '" >Keer terug naar de website.</a>';
         } else {
@@ -488,6 +508,65 @@ function getGateway($gateway_code)
     return ($gateway_code == "WALLET") ? "" : $gateway_code;
 }
 
+/**
+ * Resolve the payment dispatch suffix used in return URLs.
+ *
+ * @param array $request
+ *
+ * @return string
+ */
+function fn_multisafepay_get_return_payment(array $request)
+{
+    $payment_from_request = preg_replace('/[^a-z0-9_]/i', '', (string) ($request['payment'] ?? ''));
+    if (fn_multisafepay_is_valid_return_payment($payment_from_request)) {
+        return $payment_from_request;
+    }
+
+    $transaction_id = (int) ($request['transactionid'] ?? 0);
+    if (!$transaction_id) {
+        return 'multisafepay_ideal';
+    }
+
+    $order_info = fn_get_order_info($transaction_id, true);
+    if (empty($order_info['payment_id'])) {
+        return 'multisafepay_ideal';
+    }
+
+    $processor_data = fn_get_processor_data((int) $order_info['payment_id']);
+    $processor_script = (string) ($processor_data['processor_script'] ?? '');
+    if ($processor_script !== '' && substr($processor_script, -4) === '.php') {
+        $processor_script = substr($processor_script, 0, -4);
+    }
+
+    return fn_multisafepay_is_valid_return_payment($processor_script)
+        ? $processor_script
+        : 'multisafepay_ideal';
+}
+
+/**
+ * Validate that a return payment handler name belongs to this plugin and maps to a
+ * registered payment processor script.
+ *
+ * We intentionally do not trust the incoming request value as-is. The handler name
+ * must stay within the multisafepay_* namespace and also be registered in CS-Cart,
+ * otherwise a crafted return URL could point to an invalid or unrelated payment script.
+ *
+ * @param string $payment
+ *
+ * @return bool
+ */
+function fn_multisafepay_is_valid_return_payment($payment)
+{
+    // Only allow expected MultiSafepay handler names before touching the database.
+    if ($payment === '' || !preg_match('/^multisafepay_[a-z0-9_]+$/i', $payment)) {
+        return false;
+    }
+
+    // Accept the handler only when CS-Cart knows it as a registered processor script.
+    return function_exists('db_get_field')
+        && (bool) db_get_field('SELECT processor_script FROM ?:payment_processors WHERE processor_script = ?s', $payment . '.php');
+}
+
 function fn_format_price_by_currency_multisafepay($price, $currency_from = CART_PRIMARY_CURRENCY, $currency_to = CART_SECONDARY_CURRENCY)
 {
     //Get currencies
@@ -541,4 +620,99 @@ function getProductCode($product_data = [])
     $product_code .= '-' . implode("-", $add_to_merchant_item_id);
 
     return $product_code;
+}
+
+/**
+ * Build a human-readable payment method using wallet and underlying instrument.
+ *
+ * @param array $processor_data
+ * @param array $details
+ *
+ * @return string
+ */
+function fn_multisafepay_get_payment_method_display(array $processor_data, array $details)
+{
+    $gateway_code = (string) ($processor_data['processor_params']['gateway'] ?? '');
+    $wallet_from_details = (string) ($details['paymentdetails']['wallet'] ?? '');
+    $instrument_code = (string) ($details['paymentdetails']['type'] ?? '');
+    $instrument_display = fn_multisafepay_get_instrument_display_name($instrument_code);
+    $allowed_combined_instruments = ['AMEX', 'MASTERCARD', 'VISA'];
+
+    $wallet_code = $wallet_from_details !== '' ? $wallet_from_details : $gateway_code;
+    $wallet_name = fn_multisafepay_get_wallet_name($wallet_code);
+
+    if ($wallet_name === '') {
+        return $instrument_display;
+    }
+
+    if ($instrument_code === '') {
+        return $wallet_name;
+    }
+
+    if (in_array($instrument_code, $allowed_combined_instruments, true)) {
+        return $wallet_name . ' (' . $instrument_display . ')';
+    }
+
+    return $instrument_display;
+}
+
+/**
+ * Returns whether the gateway is Apple Pay or Google Pay.
+ *
+ * @param string $gateway_code
+ *
+ * @return bool
+ */
+function fn_multisafepay_is_wallet_gateway($gateway_code)
+{
+    return in_array($gateway_code, ['APPLEPAY', 'GOOGLEPAY'], true);
+}
+
+/**
+ * Returns a display-ready payment type label.
+ *
+ * @param array $details
+ *
+ * @return string
+ */
+function fn_multisafepay_get_payment_type_display(array $details)
+{
+    $instrument_code = (string) ($details['paymentdetails']['type'] ?? '');
+
+    return fn_multisafepay_get_instrument_display_name($instrument_code);
+}
+
+/**
+ * Normalizes payment instrument code to merchant-friendly label.
+ *
+ * @param string $instrument_code
+ *
+ * @return string
+ */
+function fn_multisafepay_get_instrument_display_name($instrument_code)
+{
+    $instrument_map = [
+        'AMEX' => 'American Express',
+        'MASTERCARD' => 'Mastercard',
+        'VISA' => 'Visa',
+    ];
+
+    return $instrument_map[$instrument_code] ?? $instrument_code;
+}
+
+/**
+ * Returns normalized wallet names for known wallet gateway codes.
+ *
+ * @param string $wallet_code
+ *
+ * @return string
+ */
+function fn_multisafepay_get_wallet_name($wallet_code)
+{
+    $wallet_map = [
+        'APPLEPAY' => 'Apple Pay',
+        'GOOGLEPAY' => 'Google Pay',
+    ];
+
+    return $wallet_map[$wallet_code] ?? '';
 }
