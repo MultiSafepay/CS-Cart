@@ -6,6 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ***
 
+## 1.8.0
+Release date - Apr 9th, 2026
+
+### Added
++ DAVAMS-984: Add card names info to Apple Pay and Google Pay payment methods
++ PLGCSCS-163: Add in3 payment method
++ DAVAMS-864: Add Billink payment method
+
+### Changed
++ DAVAMS-954: Rebranding: iDEAL - Wero payment method
+
+### Removed
++ DAVAMS-927: Remove Sofort payment method
+
+***
+
 ## 1.7.2
 Release date - Dec 19th, 2024
 
